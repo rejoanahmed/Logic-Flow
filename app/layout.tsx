@@ -22,7 +22,7 @@ export default function RootLayout({
             Collaborate <span className='text-purple-600'>Masterpiece</span>
           </h1>
         </nav>
-        <main className=''>{children}</main>
+        <div className=''>{children}</div>
       </body>
     </html>
   )
