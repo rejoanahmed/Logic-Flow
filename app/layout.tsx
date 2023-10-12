@@ -18,9 +18,9 @@ export default function RootLayout({
     <html lang='en'>
       <body className={inter.className}>
         <nav className='flex px-10 py-4 bg-gray-200'>
-          <h1 className='font-bold text-2xl tracking-tighter'>
+          {/* <h1 className='font-bold text-2xl tracking-tighter'>
             Collaborate <span className='text-purple-600'>Masterpiece</span>
-          </h1>
+          </h1> */}
         </nav>
         <div className=''>{children}</div>
       </body>
