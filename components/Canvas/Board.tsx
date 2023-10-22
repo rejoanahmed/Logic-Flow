@@ -57,8 +57,8 @@ const LogicBoard = () => {
   })
 
   useEffect(() => {
-    if (canvasRef.current && size.width && size.height) {
-      const canvas = canvasRef.current
+    if (canvasRef && size.width && size.height) {
+      const canvas = canvasRef
       canvas.setDimensions({
         width: size.width - (sidebarOpen ? SIDEBAR_WIDTH : 0) - 10,
         height: size.height - 64

@@ -1,7 +1,10 @@
 import { fabric } from 'fabric'
-import { useCallback, useEffect, useRef } from 'react'
+import { atom, useAtom } from 'jotai'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 const DEV_MODE = true
+
+const canvasAtom = atom<fabric.Canvas | null>(null)
 
 export function useCanvas(
   init?: (canvas: fabric.Canvas) => void,
@@ -9,7 +12,7 @@ export function useCanvas(
   deps: any[] = []
 ) {
   const elementRef = useRef<HTMLCanvasElement>(null)
-  const fc = useRef<fabric.Canvas | null>(null)
+  const [fc, setFc] = useAtom(canvasAtom)
   const data = useRef<any>(null)
 
   const setRef = useCallback(
@@ -17,14 +20,15 @@ export function useCanvas(
       //@ts-ignore
       elementRef.current = ref
       // save state
-      if (DEV_MODE && saveState && fc.current) {
-        data.current = fc.current.toJSON()
+      if (DEV_MODE && saveState && fc) {
+        data.current = fc.toJSON()
       }
       // dispose canvas
-      fc.current?.dispose()
+      fc?.dispose()
       // set/clear ref
       if (!ref) {
-        fc.current = null
+        console.log('clearing ref')
+        setFc(null)
         return
       }
       const canvas = new fabric.Canvas(ref, {
@@ -32,7 +36,8 @@ export function useCanvas(
         fireRightClick: true, // enable firing of right click events
         fireMiddleClick: true
       })
-      fc.current = canvas
+      console.log('setting ref')
+      setFc(canvas)
       // invoke callback
       init && init(canvas)
       // restore state
@@ -47,13 +52,14 @@ export function useCanvas(
     return () => {
       // save state
       console.log('disposing')
-      if (DEV_MODE && saveState && fc.current) {
-        data.current = fc.current.toJSON()
+      if (DEV_MODE && saveState && fc) {
+        data.current = fc.toJSON()
       }
       // we avoid unwanted disposing by doing so only if element ref is unavailable
       if (!elementRef.current) {
-        fc.current?.dispose()
-        fc.current = null
+        fc?.dispose()
+        console.log('disposing ref')
+        setFc(null)
       }
     }
   }, [saveState])
