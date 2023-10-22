@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -16,22 +12,34 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "allowImportingTsExtensions":true,
+    "allowImportingTsExtensions": true,
     "jsx": "preserve",
     "incremental": true,
     "plugins": [
       {
         "name": "next"
       }
-    ]
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "components/*": ["components/*"],
+      "pages/*": ["pages/*"],
+      "app/*": ["app/*"],
+      "lib/*": ["lib/*"],
+      "hooks/*": ["hooks/*"],
+      "context/*": ["context/*"]
+    }
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts"
-, "components/layout.tsx", "pages/pub-sub.old", "pages/index.old", "app/page.tsx.old", "app/pub-sub/pubsub-client.tsx.old"  ],
-  "exclude": [
-    "node_modules"
-  ]
+    ".next/types/**/*.ts",
+    "components/layout.tsx",
+    "pages/pub-sub.old",
+    "pages/index.old",
+    "app/page.tsx.old",
+    "app/pub-sub/pubsub-client.tsx.old"
+  ],
+  "exclude": ["node_modules"]
 }
