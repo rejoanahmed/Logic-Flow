@@ -27,7 +27,11 @@ export function useCanvas(
         fc.current = null
         return
       }
-      const canvas = new fabric.Canvas(ref, { backgroundColor: 'white' })
+      const canvas = new fabric.Canvas(ref, {
+        backgroundColor: 'rgb(238,231,220)',
+        fireRightClick: true, // enable firing of right click events
+        fireMiddleClick: true
+      })
       fc.current = canvas
       // invoke callback
       init && init(canvas)

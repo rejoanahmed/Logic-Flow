@@ -1,3 +1,4 @@
+import Navabr from 'components/Navabr'
 import './global.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
@@ -18,11 +19,7 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body className={inter.className}>
-        <nav className='flex px-10 py-4 bg-gray-200'>
-          <h1 className='font-bold text-2xl tracking-tighter'>
-            Logic <span className='text-purple-600'>Flow</span>
-          </h1>
-        </nav>
+        <Navabr />
         <div className=''>{children}</div>
       </body>
     </html>
