@@ -42,6 +42,7 @@ function BoardLayout({ children }: { children: React.ReactNode }) {
                   backgroundColor: 'white'
                 })
               )
+              console.log(canvas?.toDatalessObject())
             }}
             className='flex justify-center items-center w-full h-16 border-b border-slate-500'
           >
