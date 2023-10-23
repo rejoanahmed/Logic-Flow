@@ -18,7 +18,7 @@ function SelectModal() {
   const [canvas] = useCanvas()
 
   if (!canvas) return null
-  console.log(show)
+
   return (
     <div
       className='absolute z-50 bg-white border border-gray-300 rounded-md shadow-md p-3'

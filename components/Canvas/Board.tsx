@@ -10,11 +10,14 @@ import BoardLayout, {
 } from './Layout'
 import { useAtomValue, useSetAtom } from 'jotai'
 import SelectModal, { SelectModalAtom } from './SelectModal'
+import ActiveObjectInfoModal from './SelectedObjectInfoModal'
+import { ActiveObjectAtom } from 'state/LogicBoard'
 
 const LogicBoard = () => {
   const size = useWindowSize()
   const sidebarOpen = useAtomValue(SidebarAtom)
   const setSelectModal = useSetAtom(SelectModalAtom)
+  const setActiveObject = useSetAtom(ActiveObjectAtom)
   const [canvasRef, setCanvasElRef] = useCanvas((canvas) => {
     // Panning
     document.addEventListener('contextmenu', (event) => event.preventDefault())
@@ -65,6 +68,7 @@ const LogicBoard = () => {
           ...prev,
           show: false
         }))
+        setActiveObject(event.target)
       }
 
       console.log(canvas.getActiveObject())
@@ -177,9 +181,10 @@ const LogicBoard = () => {
   }, [canvasRef])
   return (
     <BoardLayout>
-      <SelectModal />
-      <div className='flex justify-center items-center'>
+      <div className='flex justify-center items-center relative'>
         <canvas className='' ref={setCanvasElRef} />
+        <ActiveObjectInfoModal />
+        <SelectModal />
       </div>
     </BoardLayout>
   )
