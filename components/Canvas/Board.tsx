@@ -51,10 +51,16 @@ const LogicBoard = () => {
       )
       if (delta > 0) {
         // Zoom out
-        canvas.zoomToPoint(zoomPoint, canvas.getZoom() * zoomFactor)
+        canvas.zoomToPoint(
+          zoomPoint,
+          Math.min(1.2, canvas.getZoom() * zoomFactor)
+        )
       } else {
         // Zoom in
-        canvas.zoomToPoint(zoomPoint, canvas.getZoom() / zoomFactor)
+        canvas.zoomToPoint(
+          zoomPoint,
+          Math.max(0.2, canvas.getZoom() / zoomFactor)
+        )
       }
       event.e.preventDefault() // Prevent the page from scrolling
     })

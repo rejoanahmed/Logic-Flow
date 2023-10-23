@@ -38,7 +38,8 @@ function BoardLayout({ children }: { children: React.ReactNode }) {
                   left: 100,
                   top: 100,
                   hasControls: false,
-                  hasBorders: false
+                  hasBorders: false,
+                  backgroundColor: 'white'
                 })
               )
             }}
