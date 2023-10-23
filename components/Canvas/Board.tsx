@@ -8,11 +8,13 @@ import BoardLayout, {
   SidebarAtom,
   TOGGLE_SIDEBAR_WIDTH
 } from './Layout'
-import { useAtomValue } from 'jotai'
+import { useAtomValue, useSetAtom } from 'jotai'
+import SelectModal, { SelectModalAtom } from './SelectModal'
 
 const LogicBoard = () => {
   const size = useWindowSize()
   const sidebarOpen = useAtomValue(SidebarAtom)
+  const setSelectModal = useSetAtom(SelectModalAtom)
   const [canvasRef, setCanvasElRef] = useCanvas((canvas) => {
     // Panning
     document.addEventListener('contextmenu', (event) => event.preventDefault())
@@ -20,21 +22,34 @@ const LogicBoard = () => {
     let lastX: number, lastY: number
 
     canvas.on('mouse:down', (event) => {
-      console.log(event.e.button)
-      event.e.preventDefault()
+      // middle mouse button
       if (event.e.button === 1) {
         isPanning = true
         lastX = event.e.clientX
         lastY = event.e.clientY
-      } else if (event.e.button === 2 && event.target?.data?.id) {
-        const x = event.e.clientX
-        const y = event.e.clientY
 
-        // Show the context menu with options
-        const contextMenu = document.createElement('div')
-        contextMenu.className = 'context-menu'
-        contextMenu.style.left = x + 'px'
-        contextMenu.style.top = y + 'px'
+        setSelectModal((prev) => ({
+          ...prev,
+          show: false
+        }))
+
+        // right mouse button
+      } else if (event.e.button === 2 && event.target?.data?.id) {
+        setSelectModal((prev) => ({
+          ...prev,
+          show: true,
+          top: event.e.clientY,
+          left: event.e.clientX,
+          target: event.target
+        }))
+        // const x = event.e.clientX
+        // const y = event.e.clientY
+
+        // // Show the context menu with options
+        // const contextMenu = document.createElement('div')
+        // contextMenu.className = 'context-menu'
+        // contextMenu.style.left = x + 'px'
+        // contextMenu.style.top = y + 'px'
 
         // Add delete option
         const deleteOption = document.createElement('div')
@@ -45,10 +60,11 @@ const LogicBoard = () => {
           canvas.remove(event.target!)
           canvas.renderAll()
         })
-
-        contextMenu.appendChild(deleteOption)
-
-        document.body.appendChild(contextMenu)
+      } else {
+        setSelectModal((prev) => ({
+          ...prev,
+          show: false
+        }))
       }
 
       console.log(canvas.getActiveObject())
@@ -161,6 +177,7 @@ const LogicBoard = () => {
   }, [canvasRef])
   return (
     <BoardLayout>
+      <SelectModal />
       <div className='flex justify-center items-center'>
         <canvas className='' ref={setCanvasElRef} />
       </div>
