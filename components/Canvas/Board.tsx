@@ -3,7 +3,11 @@ import { fabric } from 'fabric'
 import { useCanvas } from 'hooks/useFabric'
 import { useEffect } from 'react'
 import useWindowSize from 'hooks/useWindowSize'
-import BoardLayout, { SIDEBAR_WIDTH, SidebarAtom } from './Layout'
+import BoardLayout, {
+  SIDEBAR_WIDTH,
+  SidebarAtom,
+  TOGGLE_SIDEBAR_WIDTH
+} from './Layout'
 import { useAtomValue } from 'jotai'
 
 const LogicBoard = () => {
@@ -60,7 +64,8 @@ const LogicBoard = () => {
     if (canvasRef && size.width && size.height) {
       const canvas = canvasRef
       canvas.setDimensions({
-        width: size.width - (sidebarOpen ? SIDEBAR_WIDTH : 0) - 10,
+        width:
+          size.width - (sidebarOpen ? SIDEBAR_WIDTH : TOGGLE_SIDEBAR_WIDTH),
         height: size.height - 64
       })
     }

@@ -33,7 +33,14 @@ function BoardLayout({ children }: { children: React.ReactNode }) {
           <button
             key={gate}
             onClick={() => {
-              canvas!.add(new fabric.Text(gate, { left: 100, top: 100 }))
+              canvas!.add(
+                new fabric.Text(gate, {
+                  left: 100,
+                  top: 100,
+                  hasControls: false,
+                  hasBorders: false
+                })
+              )
             }}
             className='flex justify-center items-center w-full h-16 border-b border-slate-500'
           >
