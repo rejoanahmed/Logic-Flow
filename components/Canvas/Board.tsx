@@ -45,24 +45,6 @@ const LogicBoard = () => {
           left: event.e.clientX,
           target: event.target
         }))
-        // const x = event.e.clientX
-        // const y = event.e.clientY
-
-        // // Show the context menu with options
-        // const contextMenu = document.createElement('div')
-        // contextMenu.className = 'context-menu'
-        // contextMenu.style.left = x + 'px'
-        // contextMenu.style.top = y + 'px'
-
-        // Add delete option
-        const deleteOption = document.createElement('div')
-        deleteOption.className = 'context-menu-option'
-        deleteOption.textContent = 'Delete'
-        deleteOption.addEventListener('click', function () {
-          // Delete the selected object
-          canvas.remove(event.target!)
-          canvas.renderAll()
-        })
       } else {
         setSelectModal((prev) => ({
           ...prev,
@@ -115,42 +97,61 @@ const LogicBoard = () => {
     })
 
     // add 26 circles each with letter A - Z inside and make them not draggable and no controls or borders and all in a vertical line
-    for (let i = 0; i < 10; i++) {
-      const circle = new fabric.Circle({
-        radius: 5,
-        data: {
-          id: i
-        },
-        // generate random fill color
-        fill: `#${Math.floor(Math.random() * 16777215).toString(16)}`,
-        stroke: 'rgba(3,9,5,0.5)',
-        strokeWidth: 3,
-        originX: 'center',
-        originY: 'center',
-        hasControls: false,
-        left: 20,
-        lockMovementX: true,
-        lockMovementY: true
+    const masterControl = new fabric.Rect({
+      width: 100,
+      height: 50,
+      fill: 'lightblue',
+      left: 20,
+      top: 10,
+      hasControls: false
+    })
+
+    const inputCircle1 = new fabric.Circle({
+      radius: 5,
+      fill: 'red',
+      left: 5,
+      top: 20,
+      selectable: false
+    })
+
+    const inputCircle2 = new fabric.Circle({
+      radius: 5,
+      fill: 'green',
+      left: 5,
+      top: 40,
+      selectable: false
+    })
+
+    const outputCircle = new fabric.Circle({
+      radius: 5,
+      fill: 'blue',
+      left: 130,
+      top: 25,
+      selectable: false
+    })
+
+    // Add the group to the canvas
+    canvas.add(masterControl)
+    canvas.add(inputCircle1)
+    canvas.add(inputCircle2)
+    canvas.add(outputCircle)
+
+    // Drag event for the master control (body)
+    masterControl.on('moving', function () {
+      // Update the position of the circles
+      inputCircle1.set({
+        left: masterControl.left! - 20,
+        top: masterControl.top! + 20
       })
-      const text = new fabric.Text(String.fromCharCode(65 + i), {
-        fontSize: 30,
-        originX: 'center',
-        originY: 'center',
-        hasControls: false,
-        hasBorders: false
+      inputCircle2.set({
+        left: masterControl.left! - 20,
+        top: masterControl.top! + 40
       })
-      const group = new fabric.Group([circle, text], {
-        top: 10 + i * 50,
-        left: 20,
-        hasControls: false,
-        hasBorders: false,
-        data: {
-          id: String.fromCharCode(65 + i)
-        },
-        hoverCursor: 'pointer'
+      outputCircle.set({
+        left: masterControl.left! + 130,
+        top: masterControl.top! + 25
       })
-      canvas.add(group)
-    }
+    })
   })
 
   useEffect(() => {
@@ -172,6 +173,8 @@ const LogicBoard = () => {
         console.log('delete pressed')
         // delete selected object from canvas
         canvasRef.remove(canvasRef.getActiveObject()!)
+
+        setActiveObject(undefined)
       }
     })
 
@@ -179,6 +182,7 @@ const LogicBoard = () => {
       document.removeEventListener('keydown', () => {})
     }
   }, [canvasRef])
+
   return (
     <BoardLayout>
       <div className='flex justify-center items-center relative'>
