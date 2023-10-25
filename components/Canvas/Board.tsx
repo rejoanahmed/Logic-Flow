@@ -6,7 +6,8 @@ import useWindowSize from 'hooks/useWindowSize'
 import BoardLayout, {
   SIDEBAR_WIDTH,
   SidebarAtom,
-  TOGGLE_SIDEBAR_WIDTH
+  TOGGLE_SIDEBAR_WIDTH,
+  selectedToolAtom
 } from './Layout'
 import { useAtomValue, useSetAtom } from 'jotai'
 import SelectModal, { SelectModalAtom } from './SelectModal'
@@ -18,11 +19,43 @@ const LogicBoard = () => {
   const sidebarOpen = useAtomValue(SidebarAtom)
   const setSelectModal = useSetAtom(SelectModalAtom)
   const setActiveObject = useSetAtom(ActiveObjectAtom)
+  const gate = useAtomValue(selectedToolAtom)
   const [canvasRef, setCanvasElRef] = useCanvas((canvas) => {
     // Panning
     document.addEventListener('contextmenu', (event) => event.preventDefault())
     let isPanning = false
     let lastX: number, lastY: number
+
+    canvas.on('dragenter', (event) => {
+      event.target && event.target.set('opacity', 0.5)
+      console.log('dragenter')
+    })
+
+    canvas.on('dragover', (event) => {
+      console.log('dragover')
+    })
+
+    canvas.on('dragleave', (event) => {
+      event.target && event.target.set('opacity', 1)
+      console.log('dragleave')
+    })
+
+    canvas.on('drop', (event) => {
+      const canvasPosition = canvas.getPointer(event.e)
+
+      const left = canvasPosition.x
+      const top = canvasPosition.y
+
+      canvas.add(
+        new fabric.Text('hi', {
+          left,
+          top,
+          hasControls: false,
+          hasBorders: false,
+          backgroundColor: 'white'
+        })
+      )
+    })
 
     canvas.on('mouse:down', (event) => {
       // middle mouse button
@@ -65,7 +98,9 @@ const LogicBoard = () => {
         canvas.relativePan(new fabric.Point(deltaX, deltaY))
         // updateGrid() // Update the grid when panning
       }
-      console.log(event.target?.data?.id)
+
+      let pointer = canvas.getPointer(event.e)
+      pointer = new fabric.Point(pointer.x, pointer.y)
     })
 
     canvas.on('mouse:up', () => {
@@ -154,6 +189,7 @@ const LogicBoard = () => {
     })
   })
 
+  // resizing the canvas
   useEffect(() => {
     if (canvasRef && size.width && size.height) {
       const canvas = canvasRef
@@ -182,6 +218,8 @@ const LogicBoard = () => {
       document.removeEventListener('keydown', () => {})
     }
   }, [canvasRef])
+
+  console.log(gate)
 
   return (
     <BoardLayout>
