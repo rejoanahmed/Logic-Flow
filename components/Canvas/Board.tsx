@@ -20,7 +20,7 @@ const LogicBoard = () => {
   const setSelectModal = useSetAtom(SelectModalAtom)
   const setActiveObject = useSetAtom(ActiveObjectAtom)
   const gate = useAtomValue(selectedToolAtom)
-  const [canvasRef, setCanvasElRef] = useCanvas((canvas) => {
+  const [canvas, setCanvasElRef] = useCanvas((canvas) => {
     // Panning
     document.addEventListener('contextmenu', (event) => event.preventDefault())
     let isPanning = false
@@ -38,23 +38,6 @@ const LogicBoard = () => {
     canvas.on('dragleave', (event) => {
       event.target && event.target.set('opacity', 1)
       console.log('dragleave')
-    })
-
-    canvas.on('drop', (event) => {
-      const canvasPosition = canvas.getPointer(event.e)
-
-      const left = canvasPosition.x
-      const top = canvasPosition.y
-
-      canvas.add(
-        new fabric.Text('hi', {
-          left,
-          top,
-          hasControls: false,
-          hasBorders: false,
-          backgroundColor: 'white'
-        })
-      )
     })
 
     canvas.on('mouse:down', (event) => {
@@ -191,24 +174,49 @@ const LogicBoard = () => {
 
   // resizing the canvas
   useEffect(() => {
-    if (canvasRef && size.width && size.height) {
-      const canvas = canvasRef
+    if (canvas && size.width && size.height) {
       canvas.setDimensions({
         width:
           size.width - (sidebarOpen ? SIDEBAR_WIDTH : TOGGLE_SIDEBAR_WIDTH),
         height: size.height - 64
       })
     }
-  }, [canvasRef, size, sidebarOpen])
+  }, [canvas, size, sidebarOpen])
+
+  // drop event
+  useEffect(() => {
+    if (canvas) {
+      canvas.on('drop', (event) => {
+        const canvasPosition = canvas.getPointer(event.e)
+
+        const left = canvasPosition.x
+        const top = canvasPosition.y
+
+        canvas.add(
+          new fabric.Text(gate, {
+            left,
+            top,
+            hasControls: false,
+            hasBorders: false,
+            backgroundColor: 'white'
+          })
+        )
+      })
+    }
+
+    return () => {
+      canvas?.off('drop')
+    }
+  }, [canvas, gate])
 
   useEffect(() => {
     // listen to keydown events of delete key
     document.addEventListener('keydown', (event) => {
       console.log(event.code)
-      if (canvasRef !== null && event.code === 'Backspace') {
+      if (canvas !== null && event.code === 'Backspace') {
         console.log('delete pressed')
         // delete selected object from canvas
-        canvasRef.remove(canvasRef.getActiveObject()!)
+        canvas.remove(canvas.getActiveObject()!)
 
         setActiveObject(undefined)
       }
@@ -217,7 +225,7 @@ const LogicBoard = () => {
     return () => {
       document.removeEventListener('keydown', () => {})
     }
-  }, [canvasRef])
+  }, [canvas])
 
   console.log(gate)
 
