@@ -22,6 +22,7 @@ function ActiveObjectInfoModal() {
         >
           x
         </button>
+        <h1>{activeObject && activeObject.data?.id}</h1>
       </div>
     </div>
   )

@@ -13,6 +13,7 @@ import { useAtomValue, useSetAtom } from 'jotai'
 import SelectModal, { SelectModalAtom } from './SelectModal'
 import ActiveObjectInfoModal from './SelectedObjectInfoModal'
 import { ActiveObjectAtom } from 'state/LogicBoard'
+import { ANDGate } from 'lib/LogicBoardClass'
 
 const LogicBoard = () => {
   const size = useWindowSize()
@@ -25,20 +26,6 @@ const LogicBoard = () => {
     document.addEventListener('contextmenu', (event) => event.preventDefault())
     let isPanning = false
     let lastX: number, lastY: number
-
-    canvas.on('dragenter', (event) => {
-      event.target && event.target.set('opacity', 0.5)
-      console.log('dragenter')
-    })
-
-    canvas.on('dragover', (event) => {
-      console.log('dragover')
-    })
-
-    canvas.on('dragleave', (event) => {
-      event.target && event.target.set('opacity', 1)
-      console.log('dragleave')
-    })
 
     canvas.on('mouse:down', (event) => {
       // middle mouse button
@@ -192,15 +179,8 @@ const LogicBoard = () => {
         const left = canvasPosition.x
         const top = canvasPosition.y
 
-        canvas.add(
-          new fabric.Text(gate, {
-            left,
-            top,
-            hasControls: false,
-            hasBorders: false,
-            backgroundColor: 'white'
-          })
-        )
+        const AND = new ANDGate(2, left, top)
+        AND.draw(canvas)
       })
     }
 
@@ -226,8 +206,6 @@ const LogicBoard = () => {
       document.removeEventListener('keydown', () => {})
     }
   }, [canvas])
-
-  console.log(gate)
 
   return (
     <BoardLayout>
