@@ -103,7 +103,7 @@ export const addComponent = (
       lockMovementY: true,
       data: {
         id: output.id,
-        type: 'output',
+        type: ObjectType.ComponentOutput,
         parent: params.id
       }
     })
@@ -163,6 +163,7 @@ export const addComponent = (
         hasControls: false
       })
       canvas.add(label)
+      objectsMap.set(params.inputs[i].id + 'label', label)
     }
     objectsMap.set(params.inputs[i].id, circle)
     canvas.add(circle)
@@ -183,6 +184,7 @@ export const addComponent = (
         hasControls: false
       })
       canvas.add(label)
+      objectsMap.set(params.outputs[i].id + 'label', label)
     }
 
     objectsMap.set(params.outputs[i].id, circle)
