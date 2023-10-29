@@ -46,6 +46,10 @@ const LogicBoard = () => {
 
       canvas.on('mouse:down', (event) => {
         console.log(event.e.button)
+        const target = canvas.findTarget(event.e, false)
+        if (target?.data?.type === ObjectType.Wire) {
+          setActiveObject(target)
+        }
         // middle mouse button
         if (event.e.button === 1) {
           isPanning = true
@@ -70,6 +74,8 @@ const LogicBoard = () => {
               left: event.e.clientX,
               target: event.target
             }))
+          } else {
+            setActiveObject(event.target)
           }
           // reset wire start and end
           wireStart = undefined
@@ -227,15 +233,12 @@ const LogicBoard = () => {
       if (canvas !== null && event.code === 'Backspace') {
         //  editing textbox
         if (canvas.getActiveObject()?.type === 'textbox') return
-        if (canvas.getActiveObject() === null) return
-        // delete selected object from canvas
-        const id =
-          canvas.getActiveObject()?.data.parent ||
-          canvas.getActiveObject()?.data.id
 
-        LogicBoard?.remove(id)
-
-        setActiveObject(undefined)
+        setActiveObject((prev) => {
+          const id = prev?.data?.parent || prev?.data?.id
+          id && LogicBoard?.remove(id)
+          return undefined
+        })
       }
     })
 
