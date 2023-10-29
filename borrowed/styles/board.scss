@@ -1,0 +1,40 @@
+@import '../../design.scss';
+
+.board {
+  background-color: var(--primary);
+  background-image: linear-gradient(
+      rgba(255, 255, 255, 0.05) 0.1em,
+      transparent 0
+    ),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0.1em, transparent 0);
+  background-size: 3em 3em;
+
+  .selection-box {
+    position: fixed;
+    display: inline;
+    left: 0;
+    top: 0;
+
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+
+    rect {
+      stroke: var(--secondary);
+      fill: transparent;
+      border: dotted;
+      stroke-dasharray: 5 5;
+    }
+  }
+}
+
+.board-size {
+  width: 3000px;
+  height: 1500px;
+  overflow: hidden;
+  position: fixed;
+}
+
+.board-tool-pan {
+  cursor: grab;
+}

@@ -101,7 +101,6 @@ const LogicBoard = () => {
       event.e.preventDefault() // Prevent the page from scrolling
     })
 
-    // add 26 circles each with letter A - Z inside and make them not draggable and no controls or borders and all in a vertical line
     const masterControl = new fabric.Rect({
       width: 100,
       height: 50,
@@ -116,7 +115,10 @@ const LogicBoard = () => {
       fill: 'red',
       left: 5,
       top: 20,
-      selectable: false
+      hasControls: false,
+      lockMovementX: true,
+      lockMovementY: true,
+      hoverCursor: 'pointer'
     })
 
     const inputCircle2 = new fabric.Circle({
@@ -124,7 +126,10 @@ const LogicBoard = () => {
       fill: 'green',
       left: 5,
       top: 40,
-      selectable: false
+      hasControls: false,
+      lockMovementX: true,
+      lockMovementY: true,
+      hoverCursor: 'pointer'
     })
 
     const outputCircle = new fabric.Circle({
@@ -132,7 +137,10 @@ const LogicBoard = () => {
       fill: 'blue',
       left: 130,
       top: 25,
-      selectable: false
+      hasControls: false,
+      lockMovementX: true,
+      lockMovementY: true,
+      hoverCursor: 'pointer'
     })
 
     // Add the group to the canvas
@@ -140,6 +148,10 @@ const LogicBoard = () => {
     canvas.add(inputCircle1)
     canvas.add(inputCircle2)
     canvas.add(outputCircle)
+
+    outputCircle.on('moving', function () {
+      console.log('moving')
+    })
 
     // Drag event for the master control (body)
     masterControl.on('moving', function () {
@@ -153,9 +165,14 @@ const LogicBoard = () => {
         top: masterControl.top! + 40
       })
       outputCircle.set({
-        left: masterControl.left! + 130,
-        top: masterControl.top! + 25
+        left: masterControl.left! + 120,
+        top: masterControl.top! + 25,
+        selectable: true
       })
+
+      inputCircle1.setCoords()
+      inputCircle2.setCoords()
+      outputCircle.setCoords()
     })
   })
 

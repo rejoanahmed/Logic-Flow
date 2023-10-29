@@ -27,7 +27,8 @@
       "app/*": ["app/*"],
       "lib/*": ["lib/*"],
       "hooks/*": ["hooks/*"],
-      "context/*": ["context/*"]
+      "context/*": ["context/*"],
+      "@borrowed/*": ["borrowed/*"]
     }
   },
   "include": [

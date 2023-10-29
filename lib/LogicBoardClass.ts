@@ -10,7 +10,7 @@ export interface ConnectEventOptions {}
 
 export interface DisConnectEventOptions {}
 
-export interface ObjectSchema<T extends 'component' | 'wire'> {
+export interface ComponentSchema {
   id: string
   booleanFunction: string // 'A&B' or 'A|B' or 'A^B' or 'A' or very complex boolean function (!A&B)|(C&D)
   inputs: { label?: string; id: string }[] // id[]
@@ -20,6 +20,18 @@ export interface ObjectSchema<T extends 'component' | 'wire'> {
   label: string
 }
 
+const p: ComponentSchema = {
+  id: '123',
+  booleanFunction: 'A&B',
+  inputs: [
+    { label: 'A', id: '123' },
+    { label: 'B', id: '123' }
+  ],
+  outputs: [{ label: 'C', id: '123' }],
+  x: 0,
+  y: 0,
+  label: 'AND'
+}
 class LogicBoard {
   canvas: fabric.Canvas
   objectsMap: Map<string, fabric.Object>
