@@ -1,10 +1,24 @@
 import { fabric } from 'fabric'
 import ShortUniqueId from 'short-unique-id'
-import { addComponent } from './functions'
+import { addComponent, addInput, removeWire } from './functions'
 const uid = new ShortUniqueId({ length: 8 })
 
 export const RADIUS = 5
 export const MINIMUM_GAP = 2
+
+export enum ObjectType {
+  Input = 'input',
+  Master = 'master',
+  MasterInput = 'master-input',
+  MasterOutput = 'master-output',
+  Wire = 'wire'
+}
+
+export enum BoardElementType {
+  Component = 'component',
+  Input = 'input',
+  Wire = 'wire'
+}
 export interface AddEventOptions {}
 
 export interface RemoveEventOptions {}
@@ -14,8 +28,9 @@ export interface ConnectEventOptions {}
 export interface DisConnectEventOptions {}
 
 export interface ComponentSchema {
+  type: BoardElementType.Component
   id: string
-  inputs: { label?: string; id: string; from?: string }[]
+  inputs: { label?: string; id: string }[]
   outputs: { label?: string; id: string; booleanFunction: string }[] // 'A&B' or 'A|B' or 'A^B' or 'A' or very complex boolean function (!A&B)|(C&D)
   x: number
   y: number
@@ -23,6 +38,7 @@ export interface ComponentSchema {
 }
 
 export interface InputSchema {
+  type: BoardElementType.Input
   id: string
   x: number
   y: number
@@ -31,6 +47,7 @@ export interface InputSchema {
 }
 
 export interface WireSchema {
+  type: BoardElementType.Wire
   id: string
   from: string | { id: string; x: number; y: number } // can be wireid or component output id
   to: string // only component input id
@@ -43,12 +60,12 @@ class LogicBoard {
   wiresMap: Map<string, WireSchema> = new Map()
   constructor(
     canvas: fabric.Canvas,
-    board?: (ComponentSchema | InputSchema | WireSchema)[],
-    objectsMap?: Map<string, fabric.Object>
+    board?: (ComponentSchema | InputSchema | WireSchema)[]
   ) {
     this.canvas = canvas
     this.board = []
-    this.objectsMap = objectsMap || new Map()
+    this.objectsMap = new Map()
+    this.wiresMap = new Map()
 
     if (board) {
       let components: (ComponentSchema | InputSchema)[] = [],
@@ -72,59 +89,34 @@ class LogicBoard {
 
   add = (params: ComponentSchema | InputSchema) => {
     this.board.push(params)
-
     // components
-    if ('inputs' in params) {
+    if (params.type === BoardElementType.Component) {
       addComponent(params, this.canvas, this.objectsMap)
-    } else {
+    } else if (params.type === BoardElementType.Input) {
       // inputs
+      addInput(params, this.canvas, this.objectsMap)
     }
   }
 
-  remove = (params: RemoveEventOptions) => {}
+  remove = (id: string) => {
+    if (this.objectsMap.has(id)) {
+      // check if it is wire
+      if (this.wiresMap.has(id)) {
+        removeWire(id, this.canvas, this.board, this.wiresMap, this.objectsMap)
+      } else {
+        // remove component or input
+        const object = this.objectsMap.get(id)
+        if (object) {
+        }
+      }
+    }
+  }
 
   connect = (params: ConnectEventOptions) => {}
 
   disconnect = (params: DisConnectEventOptions) => {}
-}
 
-class PrimitiveGate {
-  constructor() {}
-}
-
-export class ANDGate extends PrimitiveGate {
-  noInputs: number = 2
-  x: number
-  y: number
-  inputs: fabric.Object | 'X'[]
-  outputs: 0 | 1 | 'X'[]
-  id: string
-  constructor(noInputs: number, x: number, y: number) {
-    super()
-    this.noInputs = noInputs
-    this.inputs = Array(noInputs).fill('X')
-    this.outputs = ['X']
-    this.x = x
-    this.y = y
-    this.id = uid.rnd()
-  }
-
-  draw = (canvas: fabric.Canvas) => {
-    const master = new fabric.IText('AND', {
-      left: this.x,
-      top: this.y,
-      fontSize: 20,
-      textAlign: 'center',
-      fontFamily: 'monospace',
-      hasControls: false,
-      hasBorders: false,
-      data: {
-        id: this.id
-      }
-    })
-
-    canvas.add(master)
-  }
+  setInputs = (params: { id: string; value: 0 | 1 | 'X' }[]) => {}
 }
 
 export default LogicBoard

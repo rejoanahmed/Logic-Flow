@@ -14,6 +14,7 @@ import SelectModal, { SelectModalAtom } from './SelectModal'
 import ActiveObjectInfoModal from './SelectedObjectInfoModal'
 import { ActiveObjectAtom } from 'state/LogicBoard'
 import ShortUniqueId from 'short-unique-id'
+import { BoardElementType } from 'lib/LogicBoardClass'
 const uid = new ShortUniqueId({ length: 8 })
 
 const LogicBoard = () => {
@@ -42,7 +43,6 @@ const LogicBoard = () => {
 
         // right mouse button
       } else if (event.e.button === 2 && event.target) {
-        console.log('right click')
         setSelectModal((prev) => ({
           ...prev,
           show: true,
@@ -124,26 +124,35 @@ const LogicBoard = () => {
         const left = canvasPosition.x
         const top = canvasPosition.y
 
+        // LogicBoard?.add({
+        //   x: left,
+        //   y: top,
+        //   id: uid.randomUUID(),
+        //   inputs: [
+        //     { id: uid.randomUUID(), label: 'A' },
+        //     { id: uid.randomUUID(), label: 'B' },
+        //     { id: uid.randomUUID(), label: 'C' },
+        //     { id: uid.randomUUID(), label: 'D' },
+        //     { id: uid.randomUUID(), label: 'E' },
+        //     { id: uid.randomUUID(), label: 'F' },
+        //     { id: uid.randomUUID(), label: 'G' },
+        //     { id: uid.randomUUID(), label: 'H' }
+        //   ],
+        //   label: '8X1 MUX',
+        //   outputs: [
+        //     { id: uid.randomUUID(), label: 'X', booleanFunction: 'A&&B' },
+        //     { id: uid.randomUUID(), label: 'Y', booleanFunction: 'A&&B' },
+        //     { id: uid.randomUUID(), label: 'Z', booleanFunction: 'A&&B' }
+        //   ]
+        // })
+
         LogicBoard?.add({
           x: left,
           y: top,
           id: uid.randomUUID(),
-          inputs: [
-            { id: uid.randomUUID(), label: 'A' },
-            { id: uid.randomUUID(), label: 'B' },
-            { id: uid.randomUUID(), label: 'C' },
-            { id: uid.randomUUID(), label: 'D' },
-            { id: uid.randomUUID(), label: 'E' },
-            { id: uid.randomUUID(), label: 'F' },
-            { id: uid.randomUUID(), label: 'G' },
-            { id: uid.randomUUID(), label: 'H' }
-          ],
-          label: '8X1 MUX',
-          outputs: [
-            { id: uid.randomUUID(), label: 'X', booleanFunction: 'A&&B' },
-            { id: uid.randomUUID(), label: 'Y', booleanFunction: 'A&&B' },
-            { id: uid.randomUUID(), label: 'Z', booleanFunction: 'A&&B' }
-          ]
+          label: 'A',
+          value: 'X',
+          type: BoardElementType.Input
         })
       })
     }

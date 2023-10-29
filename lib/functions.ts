@@ -1,4 +1,10 @@
-import { ComponentSchema, MINIMUM_GAP, RADIUS } from './LogicBoardClass'
+import {
+  ComponentSchema,
+  InputSchema,
+  MINIMUM_GAP,
+  RADIUS,
+  WireSchema
+} from './LogicBoardClass'
 import { fabric } from 'fabric'
 
 type Nodee<T extends 'input' | 'composite'> = {
@@ -217,4 +223,86 @@ export const addComponent = (
       }
     }
   })
+}
+
+export const addInput = (
+  params: InputSchema,
+  canvas: fabric.Canvas,
+  objectsMap: Map<string, fabric.Object>
+) => {
+  const circle = new fabric.Circle({
+    radius: RADIUS,
+    fill: 'white',
+    originX: 'center',
+    originY: 'center',
+    hasControls: false,
+    hoverCursor: 'pointer',
+    moveCursor: 'pointer',
+    lockMovementX: true,
+    lockMovementY: true,
+    data: {
+      id: params.id,
+      type: 'input',
+      parent: params.id
+    }
+  })
+
+  const labelText = new fabric.Text(params.label, {
+    fill: 'white',
+    originX: 'center',
+    originY: 'center',
+    fontSize: 20
+  })
+
+  const labelBox = new fabric.Rect({
+    width: 30,
+    height: 30,
+    originX: 'center',
+    originY: 'center',
+    fill: 'black'
+  })
+
+  const master = new fabric.Group([labelBox, labelText], {
+    left: params.x,
+    top: params.y,
+    hasControls: false,
+    data: params
+  })
+
+  canvas.add(master)
+
+  objectsMap.set(params.id, master)
+
+  circle.left = master.left! + master.width!
+  circle.top = master.top! + master.height! / 2
+  circle.setCoords()
+  canvas.add(circle)
+  objectsMap.set(params.id, circle)
+
+  master.on('moving', () => {
+    circle.left = master.left! + master.width!
+    circle.top = master.top! + master.height! / 2
+    circle.setCoords()
+  })
+}
+
+export const removeWire = (
+  id: string,
+  canvas: fabric.Canvas,
+  board: (ComponentSchema | InputSchema | WireSchema)[],
+  wiresMap: Map<string, WireSchema>,
+  objectsMap: Map<string, fabric.Object>
+) => {
+  // remove wire
+  const wire = wiresMap.get(id)
+  if (wire) {
+    // remove from canvas
+    canvas.remove(objectsMap.get(id)!)
+    // remove from objectsMap
+    objectsMap.delete(id)
+    // remove from wiresMap
+    wiresMap.delete(id)
+    // remove from board
+    board = board.filter((item) => item.id !== id)
+  }
 }
