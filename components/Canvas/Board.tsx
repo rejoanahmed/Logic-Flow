@@ -13,7 +13,8 @@ import { useAtomValue, useSetAtom } from 'jotai'
 import SelectModal, { SelectModalAtom } from './SelectModal'
 import ActiveObjectInfoModal from './SelectedObjectInfoModal'
 import { ActiveObjectAtom } from 'state/LogicBoard'
-import { ANDGate } from 'lib/LogicBoardClass'
+import ShortUniqueId from 'short-unique-id'
+const uid = new ShortUniqueId({ length: 8 })
 
 const LogicBoard = () => {
   const size = useWindowSize()
@@ -21,7 +22,7 @@ const LogicBoard = () => {
   const setSelectModal = useSetAtom(SelectModalAtom)
   const setActiveObject = useSetAtom(ActiveObjectAtom)
   const gate = useAtomValue(selectedToolAtom)
-  const [canvas, setCanvasElRef] = useCanvas((canvas) => {
+  const [canvas, setCanvasElRef, LogicBoard] = useCanvas((canvas) => {
     // Panning
     document.addEventListener('contextmenu', (event) => event.preventDefault())
     let isPanning = false
@@ -101,95 +102,6 @@ const LogicBoard = () => {
       }
       event.e.preventDefault() // Prevent the page from scrolling
     })
-
-    const numberOfInputs = 2
-    const labelText = new fabric.Text('AND', {
-      fill: 'white',
-      originX: 'center',
-      originY: 'center',
-      fontSize: 20
-    })
-    console.log(Math.max(numberOfInputs * 20 + 20, labelText.height! + 20))
-    const labelBox = new fabric.Rect({
-      width: labelText.width! + 20,
-      height: Math.max(numberOfInputs * 10 + 20, labelText.height! + 20),
-      originX: 'center',
-      originY: 'center',
-      fill: 'black'
-    })
-
-    const masterControl = new fabric.Group([labelBox, labelText], {
-      left: 100,
-      top: 100,
-      hasControls: false
-    })
-
-    console.log(masterControl.width)
-
-    const inputCircle1 = new fabric.Circle({
-      radius: 5,
-      fill: 'red',
-      left: 5,
-      top: 20,
-      hasControls: false,
-      lockMovementX: true,
-      lockMovementY: true,
-      hoverCursor: 'pointer'
-    })
-
-    const inputCircle2 = new fabric.Circle({
-      radius: 5,
-      fill: 'green',
-      left: 5,
-      top: 40,
-      hasControls: false,
-      lockMovementX: true,
-      lockMovementY: true,
-      hoverCursor: 'pointer'
-    })
-
-    const outputCircle = new fabric.Circle({
-      radius: 5,
-      fill: 'blue',
-      left: 130,
-      top: 25,
-      hasControls: false,
-      lockMovementX: true,
-      lockMovementY: true,
-      hoverCursor: 'pointer'
-    })
-
-    // Add the group to the canvas
-    canvas.add(masterControl)
-    canvas.add(inputCircle1)
-    canvas.add(inputCircle2)
-    canvas.add(outputCircle)
-
-    outputCircle.on('moving', function () {
-      console.log('moving')
-    })
-
-    // Drag event for the master control (body)
-    masterControl.on('moving', function () {
-      // Update the position of the circles
-      inputCircle1.set({
-        left: masterControl.left! - 20,
-        top: masterControl.top! + 20
-      })
-      inputCircle2.set({
-        left: masterControl.left! - 20,
-        top: masterControl.top! + 40
-      })
-      outputCircle.set({
-        left: masterControl.left! + 120,
-        top: masterControl.top! + 25,
-        selectable: true
-      })
-
-      inputCircle1.setCoords()
-      inputCircle2.setCoords()
-      outputCircle.setCoords()
-    })
   })
 
   // resizing the canvas
@@ -205,22 +117,32 @@ const LogicBoard = () => {
 
   // drop event
   useEffect(() => {
-    if (canvas) {
+    if (LogicBoard && canvas) {
       canvas.on('drop', (event) => {
         const canvasPosition = canvas.getPointer(event.e)
 
         const left = canvasPosition.x
         const top = canvasPosition.y
 
-        const AND = new ANDGate(2, left, top)
-        AND.draw(canvas)
+        LogicBoard?.add({
+          booleanFunction: 'A&&B',
+          x: left,
+          y: top,
+          id: uid.randomUUID(),
+          inputs: [
+            { id: uid.randomUUID(), label: 'Bro' },
+            { id: uid.randomUUID() }
+          ],
+          label: 'AND',
+          outputs: [{ id: uid.randomUUID() }]
+        })
       })
     }
 
     return () => {
       canvas?.off('drop')
     }
-  }, [canvas, gate])
+  }, [canvas, gate, LogicBoard])
 
   useEffect(() => {
     // listen to keydown events of delete key

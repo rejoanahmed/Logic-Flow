@@ -1,7 +1,11 @@
 import { fabric } from 'fabric'
 import { atom, useAtom } from 'jotai'
 import { useCallback, useEffect, useRef, useState } from 'react'
-
+import LogicBoard, {
+  ComponentSchema,
+  InputSchema,
+  WireSchema
+} from 'lib/LogicBoardClass'
 const DEV_MODE = true
 
 const canvasAtom = atom<fabric.Canvas | null>(null)
@@ -9,16 +13,19 @@ const canvasAtom = atom<fabric.Canvas | null>(null)
 export function useCanvas(
   init?: (canvas: fabric.Canvas) => void,
   saveState = false,
+  boardData?: (ComponentSchema | InputSchema | WireSchema)[],
   deps: any[] = []
 ) {
   const elementRef = useRef<HTMLCanvasElement>(null)
   const [fc, setFc] = useAtom(canvasAtom)
   const data = useRef<any>(null)
+  const LogicBoardRef = useRef<LogicBoard | null>(null)
 
   const setRef = useCallback(
     (ref: HTMLCanvasElement | null) => {
       //@ts-ignore
       elementRef.current = ref
+
       // save state
       if (DEV_MODE && saveState && fc) {
         data.current = fc.toJSON()
@@ -34,8 +41,11 @@ export function useCanvas(
       const canvas = new fabric.Canvas(ref, {
         backgroundColor: 'rgb(238,231,220)',
         fireRightClick: true, // enable firing of right click events
-        fireMiddleClick: true
+        fireMiddleClick: true,
+        preserveObjectStacking: true
       })
+      const board = new LogicBoard(canvas, boardData)
+      LogicBoardRef.current = board
       console.log('setting ref')
       setFc(canvas)
       // invoke callback
@@ -63,5 +73,5 @@ export function useCanvas(
       }
     }
   }, [saveState])
-  return [fc, setRef] as [typeof fc, typeof setRef]
+  return [fc, setRef, LogicBoardRef.current] as const
 }

@@ -1,8 +1,8 @@
 import { fabric } from 'fabric'
 import ShortUniqueId from 'short-unique-id'
 const uid = new ShortUniqueId({ length: 8 })
-export const RADIUS = 3
-export const MINIMUM_GAP = 5
+export const RADIUS = 5
+export const MINIMUM_GAP = 2
 export interface AddEventOptions {}
 
 export interface RemoveEventOptions {}
@@ -39,9 +39,33 @@ class LogicBoard {
   objectsMap: Map<string, fabric.Object>
   board: (ComponentSchema | InputSchema | WireSchema)[] = []
 
-  constructor(canvas: fabric.Canvas, objectsMap?: Map<string, fabric.Object>) {
+  constructor(
+    canvas: fabric.Canvas,
+    board?: (ComponentSchema | InputSchema | WireSchema)[],
+    objectsMap?: Map<string, fabric.Object>
+  ) {
     this.canvas = canvas
+    this.board = board || []
     this.objectsMap = objectsMap || new Map()
+
+    if (board) {
+      let components: (ComponentSchema | InputSchema)[] = [],
+        connections: WireSchema[] = []
+      for (let i = 0; i < this.board.length; i++) {
+        const element = this.board[i]
+        if ('x' in element) {
+          components.push(element)
+        } else {
+          connections.push(element)
+        }
+      }
+      components.forEach((component) => {
+        this.add(component)
+      })
+      connections.forEach((connection) => {
+        this.connect(connection)
+      })
+    }
   }
 
   add = (params: ComponentSchema | InputSchema) => {
@@ -55,7 +79,7 @@ class LogicBoard {
             fill: 'white',
             originX: 'center',
             originY: 'center',
-            fontSize: 16,
+            fontSize: 12,
             hasControls: false
           })
           obj['label'] = labelText
@@ -87,7 +111,7 @@ class LogicBoard {
             fill: 'white',
             originX: 'center',
             originY: 'center',
-            fontSize: 16,
+            fontSize: 12,
             hasControls: false
           })
           obj['label'] = labelText
@@ -122,7 +146,7 @@ class LogicBoard {
         fontSize: 20
       })
       const labelBox = new fabric.Rect({
-        width: labelText.width! + +20 + padding,
+        width: labelText.width! + 40 + padding,
         height: Math.max(
           params.inputs.length * (RADIUS + MINIMUM_GAP * 2) * 2,
           labelText.height! + 20
@@ -149,14 +173,11 @@ class LogicBoard {
         const input = inputs[i]
         const circle = input.circle
         const label = input.label
-        circle.left = master.left! - master.width! / 2
-        circle.top =
-          master.top! -
-          master.height! / 2 +
-          ((i + 1) * master.height!) / (noInputs + 1)
+        circle.left = master.left!
+        circle.top = master.top! + ((i + 1) * master.height!) / (noInputs + 1)
 
         if (label) {
-          label.left = circle.left! + label.width! + 5
+          label.left = circle.left! + RADIUS * 2 + MINIMUM_GAP
           label.top = circle.top!
           obj = new fabric.Group([circle, label], {
             hasControls: false,
@@ -165,7 +186,7 @@ class LogicBoard {
             lockMovementY: true
           })
         }
-
+        inputs[i] = obj || (circle as any)
         this.objectsMap.set(params.inputs[i].id, obj || circle)
         this.canvas.add(obj || circle)
       }
@@ -175,14 +196,11 @@ class LogicBoard {
         const output = outputs[i]
         const circle = output.circle
         const label = output.label
-        circle.left = master.left! + master.width! / 2
-        circle.top =
-          master.top! -
-          master.height! / 2 +
-          ((i + 1) * master.height!) / (noOutputs + 1)
+        circle.left = master.left! + master.width!
+        circle.top = master.top! + ((i + 1) * master.height!) / (noOutputs + 1)
 
         if (label) {
-          label.left = circle.left! - label.width! - 5
+          label.left = circle.left! - (RADIUS * 2 + MINIMUM_GAP)
           label.top = circle.top!
           obj = new fabric.Group([circle, label], {
             hasControls: false,
@@ -192,38 +210,25 @@ class LogicBoard {
           })
         }
 
+        outputs[i] = obj || (circle as any)
         this.objectsMap.set(params.outputs[i].id, obj || circle)
         this.canvas.add(obj || circle)
       }
 
-      master.on('moving', (e) => {
-        const target = e.target as fabric.Group
-        const data = target.data as ComponentSchema
-        const inputs = data.inputs
-        const outputs = data.outputs
-        const noInputs = inputs.length
-        const noOutputs = outputs.length
-
+      master.on('moving', () => {
         for (let i = 0; i < noInputs; i++) {
-          const input = inputs[i]
-          const circle = this.objectsMap.get(input.id) as fabric.Circle
-          circle.left = target.left! - target.width! / 2
-          circle.top =
-            target.top! -
-            target.height! / 2 +
-            ((i + 1) * target.height!) / (noInputs + 1)
-          // this.canvas.renderAll()
+          const input = inputs[i] as unknown as fabric.Object
+          input.left = master.left!
+          input.top = master.top! + ((i + 1) * master.height!) / (noInputs + 1)
+          input.setCoords()
         }
 
         for (let i = 0; i < noOutputs; i++) {
-          const output = outputs[i]
-          const circle = this.objectsMap.get(output.id) as fabric.Circle
-          circle.left = target.left! + target.width! / 2
-          circle.top =
-            target.top! -
-            target.height! / 2 +
-            ((i + 1) * target.height!) / (noOutputs + 1)
-          // this.canvas.renderAll()
+          const output = outputs[i] as unknown as fabric.Object
+          output.left = master.left! + master.width!
+          output.top =
+            master.top! + ((i + 1) * master.height!) / (noOutputs + 1)
+          output.setCoords()
         }
       })
     } else {
