@@ -37,7 +37,7 @@ class LogicBoard {
   canvas: fabric.Canvas
   objectsMap: Map<string, fabric.Object>
   board: (ComponentSchema | InputSchema | WireSchema)[] = []
-
+  // wire map different from board
   constructor(
     canvas: fabric.Canvas,
     board?: (ComponentSchema | InputSchema | WireSchema)[],
@@ -94,6 +94,8 @@ class LogicBoard {
           hasControls: false,
           hoverCursor: 'pointer',
           moveCursor: 'pointer',
+          lockMovementX: true,
+          lockMovementY: true,
           data: {
             id: input.id,
             type: 'input',
@@ -128,6 +130,8 @@ class LogicBoard {
           hasControls: false,
           hoverCursor: 'pointer',
           moveCursor: 'pointer',
+          lockMovementX: true,
+          lockMovementY: true,
           data: {
             id: output.id,
             type: 'output',
