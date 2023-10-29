@@ -11,7 +11,7 @@ const DEV_MODE = true
 const canvasAtom = atom<fabric.Canvas | null>(null)
 
 export function useCanvas(
-  init?: (canvas: fabric.Canvas) => void,
+  init?: (canvas: fabric.Canvas, LogicBoard: LogicBoard) => void,
   saveState = false,
   boardData?: (ComponentSchema | InputSchema | WireSchema)[],
   deps: any[] = []
@@ -49,7 +49,7 @@ export function useCanvas(
       console.log('setting ref')
       setFc(canvas)
       // invoke callback
-      init && init(canvas)
+      init && init(canvas, board)
       // restore state
       if (DEV_MODE && saveState && data.current) {
         canvas.loadFromJSON(data.current, () => {})

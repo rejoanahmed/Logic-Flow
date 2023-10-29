@@ -165,6 +165,7 @@ export const addComponent = (
       canvas.add(label)
       objectsMap.set(params.inputs[i].id + 'label', label)
     }
+    console.log('adding-input', i, circle.data)
     objectsMap.set(params.inputs[i].id, circle)
     canvas.add(circle)
   }
@@ -186,7 +187,7 @@ export const addComponent = (
       canvas.add(label)
       objectsMap.set(params.outputs[i].id + 'label', label)
     }
-
+    console.log('adding-output', i, circle.data)
     objectsMap.set(params.outputs[i].id, circle)
     canvas.add(circle)
   }
@@ -246,7 +247,7 @@ export const addInput = (
     lockMovementY: true,
     data: {
       id: params.id,
-      type: 'input',
+      type: ObjectType.ComponentOutput,
       parent: params.id
     }
   })
@@ -297,6 +298,7 @@ export const addWire = (
   wiresMap: Map<string, WireSchema>
 ) => {
   // output to input
+  console.log('addingwire ')
   let from: fabric.Object | { left: number; top: number } | undefined
   if (typeof params.from === 'string') {
     from = objectsMap.get(params.from)
@@ -314,6 +316,7 @@ export const addWire = (
       moveCursor: 'pointer',
       data: params
     })
+    console.log('adding', line)
     canvas.add(line)
     objectsMap.set(params.id, line)
     wiresMap.set(params.id, params)

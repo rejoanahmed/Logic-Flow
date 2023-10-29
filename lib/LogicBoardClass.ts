@@ -11,6 +11,7 @@ const uid = new ShortUniqueId({ length: 8 })
 
 export const RADIUS = 5
 export const MINIMUM_GAP = 2
+export const WIRE_WIDTH = 5
 
 export enum ObjectType {
   Input = 'input',
@@ -94,7 +95,8 @@ class LogicBoard {
     }
   }
 
-  add = (params: ComponentSchema | InputSchema | WireSchema) => {
+  add = <T extends ComponentSchema | InputSchema | WireSchema>(params: T) => {
+    console.log('add', params)
     this.board.push(params)
     // components
     if (params.type === BoardElementType.Component) {
