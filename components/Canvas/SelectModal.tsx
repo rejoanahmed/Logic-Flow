@@ -16,7 +16,6 @@ function SelectModal() {
   const [show, setShow] = useAtom(SelectModalAtom)
   const ref = useRef(null)
   const [canvas] = useCanvas()
-
   if (!canvas) return null
 
   return (
@@ -30,7 +29,7 @@ function SelectModal() {
       ref={ref}
       onClick={() => setShow((prev) => ({ ...prev, show: false }))}
     >
-      <button onClick={() => canvas.remove(show.target!)}>delete</button>
+      <button onClick={() => canvas.remove(show.target!)}>delete g</button>
     </div>
   )
 }

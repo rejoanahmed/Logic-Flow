@@ -40,7 +40,8 @@ const LogicBoard = () => {
         }))
 
         // right mouse button
-      } else if (event.e.button === 2 && event.target?.data?.id) {
+      } else if (event.e.button === 2 && event.target) {
+        console.log('right click')
         setSelectModal((prev) => ({
           ...prev,
           show: true,
@@ -101,14 +102,29 @@ const LogicBoard = () => {
       event.e.preventDefault() // Prevent the page from scrolling
     })
 
-    const masterControl = new fabric.Rect({
-      width: 100,
-      height: 50,
-      fill: 'lightblue',
-      left: 20,
-      top: 10,
+    const numberOfInputs = 2
+    const labelText = new fabric.Text('AND', {
+      fill: 'white',
+      originX: 'center',
+      originY: 'center',
+      fontSize: 20
+    })
+    console.log(Math.max(numberOfInputs * 20 + 20, labelText.height! + 20))
+    const labelBox = new fabric.Rect({
+      width: labelText.width! + 20,
+      height: Math.max(numberOfInputs * 10 + 20, labelText.height! + 20),
+      originX: 'center',
+      originY: 'center',
+      fill: 'black'
+    })
+
+    const masterControl = new fabric.Group([labelBox, labelText], {
+      left: 100,
+      top: 100,
       hasControls: false
     })
+
+    console.log(masterControl.width)
 
     const inputCircle1 = new fabric.Circle({
       radius: 5,
@@ -178,7 +194,7 @@ const LogicBoard = () => {
 
   // resizing the canvas
   useEffect(() => {
-    if (canvas && size.width && size.height) {
+    if (canvas !== undefined && canvas !== null && size.width && size.height) {
       canvas.setDimensions({
         width:
           size.width - (sidebarOpen ? SIDEBAR_WIDTH : TOGGLE_SIDEBAR_WIDTH),
@@ -209,9 +225,10 @@ const LogicBoard = () => {
   useEffect(() => {
     // listen to keydown events of delete key
     document.addEventListener('keydown', (event) => {
-      console.log(event.code)
       if (canvas !== null && event.code === 'Backspace') {
-        console.log('delete pressed')
+        //  editing textbox
+        if (canvas.getActiveObject()?.type === 'textbox') return
+        if (canvas.getActiveObject() === null) return
         // delete selected object from canvas
         canvas.remove(canvas.getActiveObject()!)
 

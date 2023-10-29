@@ -1,13 +1,15 @@
-type Nodee = {
-  booleanFunction: string | 0 | 1
-  inputs: Nodee[] | null
+type Nodee<T extends 'input' | 'composite'> = {
+  booleanFunction: T extends 'composite' ? string : 0 | 1
+  inputs: T extends 'composite' ? Nodee<'input' | 'composite'>[] : null
 }
 
-export const evaluateBooleanFunction = (param: Nodee) => {
+export const evaluateBooleanFunction = (
+  param: Nodee<'input' | 'composite'>
+) => {
   return eval(getBooleanExpression(param))
 }
 
-export const getBooleanExpression = (param: Nodee) => {
+export const getBooleanExpression = (param: Nodee<'input' | 'composite'>) => {
   if (param.inputs === null) {
     return `${param.booleanFunction}`
   } else {
