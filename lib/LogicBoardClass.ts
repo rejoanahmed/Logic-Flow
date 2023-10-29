@@ -1,6 +1,12 @@
 import { fabric } from 'fabric'
 import ShortUniqueId from 'short-unique-id'
-import { addComponent, addInput, removeWire } from './functions'
+import {
+  addComponent,
+  addInput,
+  addWire,
+  removeComponent,
+  removeWire
+} from './functions'
 const uid = new ShortUniqueId({ length: 8 })
 
 export const RADIUS = 5
@@ -58,6 +64,7 @@ class LogicBoard {
   board: (ComponentSchema | InputSchema | WireSchema)[] = []
   // wire map different from board
   wiresMap: Map<string, WireSchema> = new Map()
+
   constructor(
     canvas: fabric.Canvas,
     board?: (ComponentSchema | InputSchema | WireSchema)[]
@@ -82,12 +89,12 @@ class LogicBoard {
         this.add(component)
       })
       wires.forEach((connection) => {
-        this.connect(connection)
+        this.add(connection)
       })
     }
   }
 
-  add = (params: ComponentSchema | InputSchema) => {
+  add = (params: ComponentSchema | InputSchema | WireSchema) => {
     this.board.push(params)
     // components
     if (params.type === BoardElementType.Component) {
@@ -95,6 +102,9 @@ class LogicBoard {
     } else if (params.type === BoardElementType.Input) {
       // inputs
       addInput(params, this.canvas, this.objectsMap)
+    } else {
+      // wires
+      addWire(params, this.canvas, this.objectsMap, this.wiresMap)
     }
   }
 
@@ -107,14 +117,17 @@ class LogicBoard {
         // remove component or input
         const object = this.objectsMap.get(id)
         if (object) {
+          removeComponent(
+            id,
+            this.canvas,
+            this.board,
+            this.wiresMap,
+            this.objectsMap
+          )
         }
       }
     }
   }
-
-  connect = (params: ConnectEventOptions) => {}
-
-  disconnect = (params: DisConnectEventOptions) => {}
 
   setInputs = (params: { id: string; value: 0 | 1 | 'X' }[]) => {}
 }

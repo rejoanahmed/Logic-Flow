@@ -290,6 +290,45 @@ export const addInput = (
   })
 }
 
+export const addWire = (
+  params: WireSchema,
+  canvas: fabric.Canvas,
+  objectsMap: Map<string, fabric.Object>,
+  wiresMap: Map<string, WireSchema>
+) => {
+  // output to input
+  let from: fabric.Object | { left: number; top: number } | undefined
+  if (typeof params.from === 'string') {
+    from = objectsMap.get(params.from)
+  } else {
+    from = { left: params.from.x, top: params.from.y }
+  }
+  const to = objectsMap.get(params.to)
+
+  if (from && to) {
+    const line = new fabric.Line([from.left!, from.top!, to.left!, to.top!], {
+      stroke: 'white',
+      strokeWidth: 3,
+      hasControls: false,
+      hoverCursor: 'pointer',
+      moveCursor: 'pointer',
+      data: params
+    })
+    canvas.add(line)
+    objectsMap.set(params.id, line)
+    wiresMap.set(params.id, params)
+  }
+}
+
+/**
+ * Remove component from board
+ * @param id wire id
+ * @param canvas fabric canvas
+ * @param board board
+ * @param wiresMap wires map
+ * @param objectsMap objects map
+ * @returns void
+ */
 export const removeWire = (
   id: string,
   canvas: fabric.Canvas,
@@ -306,6 +345,60 @@ export const removeWire = (
     objectsMap.delete(id)
     // remove from wiresMap
     wiresMap.delete(id)
+    // remove from board
+    board = board.filter((item) => item.id !== id)
+  }
+}
+
+/**
+ * Remove component from board
+ * @param id component master id
+ * @param canvas fabric canvas
+ * @param board board
+ * @param wiresMap wires map
+ * @param objectsMap objects map
+ * @returns void
+ */
+export const removeComponent = (
+  id: string,
+  canvas: fabric.Canvas,
+  board: (ComponentSchema | InputSchema | WireSchema)[],
+  wiresMap: Map<string, WireSchema>,
+  objectsMap: Map<string, fabric.Object>
+) => {
+  // remove component
+  const component = objectsMap.get(id)
+  if (component) {
+    // remove from canvas
+    canvas.remove(component)
+
+    // remove inputs and outputs and labels
+    const componentSchema = component.data as ComponentSchema
+    componentSchema.inputs.forEach((input) => {
+      canvas.remove(objectsMap.get(input.id)!)
+      objectsMap.delete(input.id)
+      if (objectsMap.has(input.id + 'label')) {
+        canvas.remove(objectsMap.get(input.id + 'label')!)
+        objectsMap.delete(input.id + 'label')
+      }
+    })
+    componentSchema.outputs.forEach((output) => {
+      canvas.remove(objectsMap.get(output.id)!)
+      objectsMap.delete(output.id)
+      if (objectsMap.has(output.id + 'label')) {
+        canvas.remove(objectsMap.get(output.id + 'label')!)
+        objectsMap.delete(output.id + 'label')
+      }
+    })
+
+    // remove from objectsMap
+    objectsMap.delete(id)
+    // remove from wiresMap
+    wiresMap.forEach((wire) => {
+      if (wire.from === id || wire.to === id) {
+        removeWire(wire.id, canvas, board, wiresMap, objectsMap)
+      }
+    })
     // remove from board
     board = board.filter((item) => item.id !== id)
   }
