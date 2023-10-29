@@ -70,7 +70,9 @@ class LogicBoard {
 
   add = (params: ComponentSchema | InputSchema) => {
     this.board.push(params)
-    if ('booleanFunction' in params) {
+
+    // components
+    if ('inputs' in params) {
       // inputs
       const inputs = params.inputs.map((input) => {
         const obj: { label?: fabric.Text; circle: fabric.Circle } = {} as any
@@ -91,6 +93,8 @@ class LogicBoard {
           originX: 'center',
           originY: 'center',
           hasControls: false,
+          hoverCursor: 'pointer',
+          moveCursor: 'pointer',
           data: {
             id: input.id,
             type: 'input',
@@ -123,6 +127,8 @@ class LogicBoard {
           originX: 'center',
           originY: 'center',
           hasControls: false,
+          hoverCursor: 'pointer',
+          moveCursor: 'pointer',
           data: {
             id: output.id,
             type: 'output',
@@ -169,69 +175,85 @@ class LogicBoard {
 
       // inputs and outputs
       for (let i = 0; i < noInputs; i++) {
-        let obj
         const input = inputs[i]
         const circle = input.circle
         const label = input.label
         circle.left = master.left!
         circle.top = master.top! + ((i + 1) * master.height!) / (noInputs + 1)
-
+        circle.setCoords()
         if (label) {
-          label.left = circle.left! + RADIUS * 2 + MINIMUM_GAP
-          label.top = circle.top!
-          obj = new fabric.Group([circle, label], {
-            hasControls: false,
-            data: circle.data,
-            lockMovementX: true,
-            lockMovementY: true
+          label.set({
+            left: circle.left! + RADIUS * 2 + MINIMUM_GAP,
+            top: circle.top!,
+            selectable: false,
+            hasControls: false
           })
+          this.canvas.add(label)
         }
-        inputs[i] = obj || (circle as any)
-        this.objectsMap.set(params.inputs[i].id, obj || circle)
-        this.canvas.add(obj || circle)
+        this.objectsMap.set(params.inputs[i].id, circle)
+        this.canvas.add(circle)
       }
 
       for (let i = 0; i < noOutputs; i++) {
-        let obj
         const output = outputs[i]
         const circle = output.circle
         const label = output.label
         circle.left = master.left! + master.width!
         circle.top = master.top! + ((i + 1) * master.height!) / (noOutputs + 1)
-
+        circle.setCoords()
         if (label) {
           label.left = circle.left! - (RADIUS * 2 + MINIMUM_GAP)
           label.top = circle.top!
-          obj = new fabric.Group([circle, label], {
-            hasControls: false,
-            data: circle.data,
-            lockMovementX: true,
-            lockMovementY: true
+          label.set({
+            selectable: false,
+            hasControls: false
           })
+          this.canvas.add(label)
         }
 
-        outputs[i] = obj || (circle as any)
-        this.objectsMap.set(params.outputs[i].id, obj || circle)
-        this.canvas.add(obj || circle)
+        this.objectsMap.set(params.outputs[i].id, circle)
+        this.canvas.add(circle)
       }
 
       master.on('moving', () => {
+        // inputs and outputs
         for (let i = 0; i < noInputs; i++) {
-          const input = inputs[i] as unknown as fabric.Object
-          input.left = master.left!
-          input.top = master.top! + ((i + 1) * master.height!) / (noInputs + 1)
-          input.setCoords()
+          const input = inputs[i]
+          const circle = input.circle
+          const label = input.label
+          circle.left = master.left!
+          circle.top = master.top! + ((i + 1) * master.height!) / (noInputs + 1)
+          circle.setCoords()
+          if (label) {
+            label.set({
+              left: circle.left! + RADIUS * 2 + MINIMUM_GAP,
+              top: circle.top!,
+              selectable: false,
+              hasControls: false
+            })
+          }
         }
 
         for (let i = 0; i < noOutputs; i++) {
-          const output = outputs[i] as unknown as fabric.Object
-          output.left = master.left! + master.width!
-          output.top =
+          const output = outputs[i]
+          const circle = output.circle
+          const label = output.label
+          circle.left = master.left! + master.width!
+          circle.top =
             master.top! + ((i + 1) * master.height!) / (noOutputs + 1)
-          output.setCoords()
+          circle.setCoords()
+          if (label) {
+            label.left = circle.left! - (RADIUS * 2 + MINIMUM_GAP)
+            label.top = circle.top!
+            label.set({
+              selectable: false,
+              hasControls: false
+            })
+          }
         }
       })
     } else {
+      // inputs
     }
   }
 

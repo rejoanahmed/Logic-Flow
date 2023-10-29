@@ -130,11 +130,21 @@ const LogicBoard = () => {
           y: top,
           id: uid.randomUUID(),
           inputs: [
-            { id: uid.randomUUID(), label: 'Bro' },
-            { id: uid.randomUUID() }
+            { id: uid.randomUUID(), label: 'A' },
+            { id: uid.randomUUID(), label: 'B' },
+            { id: uid.randomUUID(), label: 'C' },
+            { id: uid.randomUUID(), label: 'D' },
+            { id: uid.randomUUID(), label: 'E' },
+            { id: uid.randomUUID(), label: 'F' },
+            { id: uid.randomUUID(), label: 'G' },
+            { id: uid.randomUUID(), label: 'H' }
           ],
-          label: 'AND',
-          outputs: [{ id: uid.randomUUID() }]
+          label: '8X1 MUX',
+          outputs: [
+            { id: uid.randomUUID(), label: 'X' },
+            { id: uid.randomUUID(), label: 'Y' },
+            { id: uid.randomUUID(), label: 'Z' }
+          ]
         })
       })
     }
