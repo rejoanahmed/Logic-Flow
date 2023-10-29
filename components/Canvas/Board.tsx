@@ -75,7 +75,10 @@ const LogicBoard = () => {
           wireStart = undefined
           wireEnd = undefined
           // wire start
-          if (event.target?.data.type === ObjectType.ComponentOutput) {
+          if (
+            event.target?.data?.type === ObjectType.ComponentOutput ||
+            event.target?.data?.type === ObjectType.ComponentInput
+          ) {
             wireStart = event.target
           }
         } else {
@@ -110,7 +113,12 @@ const LogicBoard = () => {
         isPanning = false
         if (wireStart) {
           const obj = canvas.findTarget(event.e, false)
-          if (obj?.data.type === ObjectType.ComponentInput) {
+          if (
+            (wireStart.data.type === ObjectType.ComponentOutput &&
+              obj?.data?.type === ObjectType.ComponentInput) ||
+            (wireStart.data.type === ObjectType.ComponentInput &&
+              obj?.data?.type === ObjectType.ComponentOutput)
+          ) {
             wireEnd = obj
             console.log(wireStart, wireEnd)
             console.log(LogicBoard)

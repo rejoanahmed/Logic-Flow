@@ -12,6 +12,7 @@ const uid = new ShortUniqueId({ length: 8 })
 export const RADIUS = 5
 export const MINIMUM_GAP = 2
 export const WIRE_WIDTH = 5
+export const PADDING = 10
 
 export enum ObjectType {
   Input = 'input',

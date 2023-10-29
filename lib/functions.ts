@@ -68,6 +68,7 @@ export const addComponent = (
       moveCursor: 'pointer',
       lockMovementX: true,
       lockMovementY: true,
+      padding: MINIMUM_GAP,
       data: {
         id: input.id,
         type: ObjectType.ComponentInput,
@@ -102,6 +103,7 @@ export const addComponent = (
       moveCursor: 'pointer',
       lockMovementX: true,
       lockMovementY: true,
+      padding: MINIMUM_GAP,
       data: {
         id: output.id,
         type: ObjectType.ComponentOutput,
@@ -344,7 +346,10 @@ export const addWire = (
       hasControls: false,
       hoverCursor: 'pointer',
       moveCursor: 'pointer',
-      data: params
+      data: params,
+      lockMovementX: true,
+      lockMovementY: true,
+      selectable: false
     })
     canvas.add(line)
     objectsMap.set(params.id, line)
