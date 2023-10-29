@@ -100,7 +100,7 @@ class LogicBoard {
     this.board.push(params)
     // components
     if (params.type === BoardElementType.Component) {
-      addComponent(params, this.canvas, this.objectsMap)
+      addComponent(params, this.canvas, this.objectsMap, this.wiresMap)
     } else if (params.type === BoardElementType.Input) {
       // inputs
       addInput(params, this.canvas, this.objectsMap)

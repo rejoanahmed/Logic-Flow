@@ -38,7 +38,8 @@ export const getBooleanExpression = (param: Nodee<'input' | 'composite'>) => {
 export const addComponent = (
   params: ComponentSchema,
   canvas: fabric.Canvas,
-  objectsMap: Map<string, fabric.Object>
+  objectsMap: Map<string, fabric.Object>,
+  wiresMap: Map<string, WireSchema>
 ) => {
   const noInputs = params.inputs.length
   const noOutputs = params.outputs.length
@@ -165,7 +166,6 @@ export const addComponent = (
       canvas.add(label)
       objectsMap.set(params.inputs[i].id + 'label', label)
     }
-    console.log('adding-input', i, circle.data)
     objectsMap.set(params.inputs[i].id, circle)
     canvas.add(circle)
   }
@@ -187,7 +187,6 @@ export const addComponent = (
       canvas.add(label)
       objectsMap.set(params.outputs[i].id + 'label', label)
     }
-    console.log('adding-output', i, circle.data)
     objectsMap.set(params.outputs[i].id, circle)
     canvas.add(circle)
   }
@@ -227,6 +226,38 @@ export const addComponent = (
         })
       }
     }
+
+    // wires
+    params.inputs.forEach((input) => {
+      const wire = objectsMap.get(input.id + 'wire') as fabric.Line
+      const inputCircle = objectsMap.get(input.id)
+      if (wire && inputCircle) {
+        wire.set({
+          x2: inputCircle.left!,
+          y2: inputCircle.top!
+        })
+      }
+    })
+
+    params.outputs.forEach((output) => {
+      const wires = [] as fabric.Line[]
+      wiresMap.forEach((wire) => {
+        // find wires connected to this output
+        // TODO: handle the wire from wire body
+        if (wire.from === output.id) {
+          wires.push(objectsMap.get(wire.id) as fabric.Line)
+        }
+      })
+      const outputCircle = objectsMap.get(output.id)
+      if (wires.length > 0 && outputCircle) {
+        for (const wire of wires) {
+          wire.set({
+            x1: outputCircle.left!,
+            y1: outputCircle.top!
+          })
+        }
+      }
+    })
   })
 }
 
@@ -298,7 +329,6 @@ export const addWire = (
   wiresMap: Map<string, WireSchema>
 ) => {
   // output to input
-  console.log('addingwire ')
   let from: fabric.Object | { left: number; top: number } | undefined
   if (typeof params.from === 'string') {
     from = objectsMap.get(params.from)
@@ -316,7 +346,6 @@ export const addWire = (
       moveCursor: 'pointer',
       data: params
     })
-    console.log('adding', line)
     canvas.add(line)
     objectsMap.set(params.id, line)
     wiresMap.set(params.id, params)

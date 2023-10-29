@@ -115,7 +115,7 @@ const LogicBoard = () => {
             console.log(wireStart, wireEnd)
             console.log(LogicBoard)
             LogicBoard?.add({
-              id: uid.randomUUID(),
+              id: wireEnd.data.id + 'wire',
               type: BoardElementType.Wire,
               from: wireStart.data.id,
               to: wireEnd.data.id
