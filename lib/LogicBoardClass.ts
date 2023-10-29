@@ -13,9 +13,8 @@ export interface DisConnectEventOptions {}
 
 export interface ComponentSchema {
   id: string
-  booleanFunction: string // 'A&B' or 'A|B' or 'A^B' or 'A' or very complex boolean function (!A&B)|(C&D)
-  inputs: { label?: string; id: string }[] // id[]
-  outputs: { label?: string; id: string }[] // id[]
+  inputs: { label?: string; id: string; from?: string }[] // id[]
+  outputs: { label?: string; id: string; booleanFunction: string }[] // id[]  // 'A&B' or 'A|B' or 'A^B' or 'A' or very complex boolean function (!A&B)|(C&D)
   x: number
   y: number
   label: string
@@ -31,8 +30,8 @@ export interface InputSchema {
 
 export interface WireSchema {
   id: string
-  from: string
-  to: string
+  from: string | { id: string; x: number; y: number } // can be wireid or component output id
+  to: string // only component input id
 }
 class LogicBoard {
   canvas: fabric.Canvas

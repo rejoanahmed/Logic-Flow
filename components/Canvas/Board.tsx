@@ -125,7 +125,6 @@ const LogicBoard = () => {
         const top = canvasPosition.y
 
         LogicBoard?.add({
-          booleanFunction: 'A&&B',
           x: left,
           y: top,
           id: uid.randomUUID(),
@@ -141,9 +140,9 @@ const LogicBoard = () => {
           ],
           label: '8X1 MUX',
           outputs: [
-            { id: uid.randomUUID(), label: 'X' },
-            { id: uid.randomUUID(), label: 'Y' },
-            { id: uid.randomUUID(), label: 'Z' }
+            { id: uid.randomUUID(), label: 'X', booleanFunction: 'A&&B' },
+            { id: uid.randomUUID(), label: 'Y', booleanFunction: 'A&&B' },
+            { id: uid.randomUUID(), label: 'Z', booleanFunction: 'A&&B' }
           ]
         })
       })
