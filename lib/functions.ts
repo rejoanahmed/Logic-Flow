@@ -2,6 +2,7 @@ import {
   ComponentSchema,
   InputSchema,
   MINIMUM_GAP,
+  ObjectType,
   RADIUS,
   WireSchema
 } from './LogicBoardClass'
@@ -50,7 +51,8 @@ export const addComponent = (
         originX: 'center',
         originY: 'center',
         fontSize: 12,
-        hasControls: false
+        hasControls: false,
+        selectable: false
       })
       obj['label'] = labelText
     }
@@ -67,7 +69,7 @@ export const addComponent = (
       lockMovementY: true,
       data: {
         id: input.id,
-        type: 'input',
+        type: ObjectType.ComponentInput,
         parent: params.id
       }
     })

@@ -9,8 +9,8 @@ export const MINIMUM_GAP = 2
 export enum ObjectType {
   Input = 'input',
   Master = 'master',
-  MasterInput = 'master-input',
-  MasterOutput = 'master-output',
+  ComponentInput = 'component-input',
+  ComponentOutput = 'component-output',
   Wire = 'wire'
 }
 
