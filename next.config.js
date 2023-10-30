@@ -19,6 +19,7 @@ const nextConfig = {
   experimental: {
     esmExternals: 'loose'
   },
+  staticPageGenerationTimeout: 600,
   transpilePackages: ['@ably/spaces']
 }
 
