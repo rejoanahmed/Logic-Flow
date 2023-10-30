@@ -18,7 +18,8 @@ const nextConfig = {
   },
   experimental: {
     esmExternals: 'loose'
-  }
+  },
+  transpilePackages: ['@ably/spaces']
 }
 
 module.exports = nextConfig
