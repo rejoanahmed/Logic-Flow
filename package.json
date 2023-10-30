@@ -31,7 +31,8 @@
     "react-hot-toast": "^2.4.1",
     "short-unique-id": "^5.0.3",
     "tailwind-scrollbar": "^3.0.5",
-    "typescript": "5.2.2"
+    "typescript": "5.2.2",
+    "canvas": "^2.8.0"
   },
   "devDependencies": {
     "@types/fabric": "^5.3.5",
