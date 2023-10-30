@@ -28,7 +28,8 @@
       "lib/*": ["lib/*"],
       "hooks/*": ["hooks/*"],
       "context/*": ["context/*"],
-      "@borrowed/*": ["borrowed/*"]
+      "@borrowed/*": ["borrowed/*"],
+      "@/*": ["./*"]
     }
   },
   "include": [
