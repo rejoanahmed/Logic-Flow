@@ -8,7 +8,7 @@ import dynamic from 'next/dynamic'
 import Sidebar from '../../components/Sidebar.tsx'
 
 const AuthenticationClient = dynamic(
-  () => import('./authentication-client.tsx'),
+  () => import('./authentication-client.tsx') as any,
   {
     ssr: false,
     loading: () => <p>Loading...</p>

@@ -7,15 +7,18 @@ const nextConfig = {
   swcMinify: true,
   images: {
     dangerouslyAllowSVG: true,
-    domains: ['static.ably.dev'],
+    domains: ['static.ably.dev']
   },
   webpack: (config) => {
     config.externals.push({
       'utf-8-validate': 'commonjs utf-8-validate',
-      'bufferutil': 'commonjs bufferutil',
+      bufferutil: 'commonjs bufferutil'
     })
     return config
-  },  
+  },
+  experimental: {
+    esmExternals: 'loose'
+  }
 }
 
 module.exports = nextConfig
