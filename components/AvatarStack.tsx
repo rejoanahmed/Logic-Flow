@@ -1,10 +1,10 @@
 'use client'
 
 import { Avatar } from 'flowbite-react'
-import { useMembers } from '@ably/spaces/react'
+// import { useMembers } from '@ably/spaces/react'
 
 export default function AvatarStack() {
-  const { self, others, members } = useMembers()
+  // const { self, others, members } = useMembers()
 
   return (
     <div className='flex flex-wrap gap-2 ml-auto'>
