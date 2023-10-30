@@ -10,6 +10,7 @@
     "vercel-build": "yum install gcc-c++ cairo-devel pango-devel libjpeg-turbo-devel giflib-devel"
   },
   "dependencies": {
+    "@ably/spaces": "^0.2.0",
     "@types/node": "20.6.5",
     "@types/react": "18.2.22",
     "@types/react-dom": "18.2.7",
@@ -17,12 +18,12 @@
     "dotenv": "^16.0.3",
     "eslint": "8.50.0",
     "fabric": "^5.3.0",
+    "firebase": "^10.5.2",
     "flowbite": "^1.8.1",
     "flowbite-react": "^0.6.1",
     "jotai": "^2.4.3",
     "jsdom": "^19.0.0",
     "next": "^13.5.6",
-    "canvas": "2.8.0",
     "random-names-generator": "^1.0.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

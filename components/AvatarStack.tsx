@@ -1,16 +1,19 @@
 'use client'
 
 import { Avatar } from 'flowbite-react'
+import { useMembers } from '@ably/spaces/react'
 
 export default function AvatarStack() {
+  const { self, others, members } = useMembers()
+
   return (
-    <div className='flex flex-wrap gap-2'>
+    <div className='flex flex-wrap gap-2 ml-auto'>
       <Avatar.Group>
-        <Avatar img='/images/people/profile-picture-1.jpg' rounded stacked />
-        <Avatar img='/images/people/profile-picture-2.jpg' rounded stacked />
-        <Avatar img='/images/people/profile-picture-3.jpg' rounded stacked />
-        <Avatar img='/images/people/profile-picture-4.jpg' rounded stacked />
-        <Avatar img='/images/people/profile-picture-5.jpg' rounded stacked />
+        <Avatar img='https://i.pravatar.cc/300?img=1' rounded stacked />
+        <Avatar img='https://i.pravatar.cc/300?img=2' rounded stacked />
+        <Avatar img='https://i.pravatar.cc/300?img=3' rounded stacked />
+        <Avatar img='https://i.pravatar.cc/300?img=4' rounded stacked />
+        <Avatar img='https://i.pravatar.cc/300?img=5' rounded stacked />
       </Avatar.Group>
     </div>
   )
