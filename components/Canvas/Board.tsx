@@ -15,6 +15,7 @@ import ActiveObjectInfoModal from './SelectedObjectInfoModal'
 import { ActiveObjectAtom } from 'state/LogicBoard'
 import ShortUniqueId from 'short-unique-id'
 import { BoardElementType, ObjectType, WIRE_WIDTH } from 'lib/LogicBoardClass'
+
 const uid = new ShortUniqueId({ length: 8 })
 
 const LogicBoard = () => {
