@@ -1,47 +1,48 @@
 'use client'
-import { useAtom } from 'jotai'
+import { useAtom, useSetAtom } from 'jotai'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 import { UserAtom } from './Navabr'
 import { SigninWithGoogle } from '@/services/firebase/auth'
 import { spaces } from '@/services/ably'
 import dynamic from 'next/dynamic'
-import { uid } from 'lib/functions'
 import { spaceAtom } from '@/state'
+import { addWorkSpaceToUser } from '@/services/firebase/firestore'
 
 function CreateWorkspaceButton() {
   const router = useRouter()
-  const [spaceId, setSpaceId] = useAtom(spaceAtom)
+  const setSpaceId = useSetAtom(spaceAtom)
   const [user, setUser] = useAtom(UserAtom)
   const handleCreateWorkspace = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
-    const spaceId = uid.randomUUID()
     if (!user || user === 'loading') {
       const currentUser = await SigninWithGoogle()
       if (currentUser) {
+        const workspace = await addWorkSpaceToUser(currentUser.uid)
+        if (!workspace) return
         setUser(currentUser)
-        const space = await spaces.get(spaceId)
+        const space = await spaces.get(workspace.id)
         const members = await space.enter({
           photoURL: currentUser.photoURL,
           name: currentUser.displayName
         })
         console.log(members)
-        // TODO : store the space to firestore
+        setSpaceId(workspace.id)
+        router.push(`/board?spaceId=${workspace.id}`)
       }
     } else {
-      const spaceId = uid.randomUUID()
-      const space = await spaces.get(spaceId)
+      const workspace = await addWorkSpaceToUser(user.uid)
+      if (!workspace) return
+      const space = await spaces.get(workspace.id)
       const members = await space.enter({
         photoURL: user.photoURL,
         name: user.displayName
       })
       console.log(members)
-      // TODO : store the space to firestore
+      setSpaceId(workspace.id)
+      router.push(`/board?spaceId=${workspace.id}`)
     }
-    console.log('spaceId', spaceId)
-    setSpaceId(spaceId)
-    router.push(`/board?spaceId=${spaceId}`)
   }
   return (
     <button
