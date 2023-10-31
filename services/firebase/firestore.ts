@@ -72,7 +72,8 @@ export const createNewWorkspace = async (
         }
       ]
     })
-    return docRef
+    const data = await getDoc(docRef)
+    return { uid: data.id, ...data.data() } as WorkspaceDoc
   } catch (error) {
     console.log(error)
   }

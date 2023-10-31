@@ -6,14 +6,28 @@ import { AblyProvider } from 'ably/react'
 import dynamic from 'next/dynamic'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { useRouter } from 'next/router'
-import { UserAtom, spaceAtom } from '@/state'
-import { uid } from 'lib/functions'
+import { UserAtom, WorkspaceAtom, spaceAtom } from '@/state'
+import { getWorkspace } from '@/services/firebase/firestore'
+import { useEffect } from 'react'
 
 function BoardPage() {
   const spaceId = useAtomValue(spaceAtom)
   const setSpaceId = useSetAtom(spaceAtom)
   const router = useRouter()
   const [user, setUser] = useAtom(UserAtom)
+  const setWorkspace = useSetAtom(WorkspaceAtom)
+
+  useEffect(() => {
+    if (spaceId) {
+      getWorkspace(spaceId).then((workspace) => {
+        if (!workspace) {
+          router.replace('/', undefined, { shallow: true })
+          return
+        }
+        setWorkspace(workspace)
+      })
+    }
+  }, [spaceId])
 
   if (!spaceId) {
     if (router.query.spaceId) {
@@ -22,12 +36,11 @@ function BoardPage() {
       return null
     }
     if (!user) {
-      router.replace('/board?demo=true', undefined, { shallow: true })
-      const generatedSpaceId = uid.randomUUID()
-      setSpaceId(generatedSpaceId)
+      router.replace('/', undefined, { shallow: true })
       return null
     }
   }
+
   return (
     <AblyProvider client={ablyClient}>
       <SpacesProvider client={spaces}>

@@ -5,13 +5,14 @@ import React from 'react'
 import { SigninWithGoogle } from '@/services/firebase/auth'
 import { spaces } from '@/services/ably'
 import dynamic from 'next/dynamic'
-import { UserAtom, spaceAtom } from '@/state'
+import { UserAtom, WorkspaceAtom, spaceAtom } from '@/state'
 import { createNewWorkspace } from '@/services/firebase/firestore'
 
 function CreateWorkspaceButton() {
   const router = useRouter()
   const setSpaceId = useSetAtom(spaceAtom)
   const [user, setUser] = useAtom(UserAtom)
+  const setWorkspace = useSetAtom(WorkspaceAtom)
   const handleCreateWorkspace = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
@@ -24,17 +25,19 @@ function CreateWorkspaceButton() {
           currentUser.email!,
           currentUser.photoURL!
         )
+
         if (!workspace) return
         setUser(currentUser)
-        const space = await spaces.get(workspace.id)
+        const space = await spaces.get(workspace.uid)
         const members = await space.enter({
           photoURL: currentUser.photoURL,
           name: currentUser.displayName
         })
         console.log(members)
-        setSpaceId(workspace.id)
+        setWorkspace(workspace)
+        setSpaceId(workspace.uid)
         console.log('routing')
-        router.push(`/board?spaceId=${workspace.id}`)
+        router.push(`/board?spaceId=${workspace.uid}`)
       }
     } else {
       const workspace = await createNewWorkspace(
@@ -44,14 +47,15 @@ function CreateWorkspaceButton() {
         user.photoURL!
       )
       if (!workspace) return
-      const space = await spaces.get(workspace.id)
+      const space = await spaces.get(workspace.uid)
       const members = await space.enter({
         photoURL: user.photoURL,
         name: user.displayName
       })
       console.log(members)
-      setSpaceId(workspace.id)
-      router.push(`/board?spaceId=${workspace.id}`)
+      setWorkspace(workspace)
+      setSpaceId(workspace.uid)
+      router.push(`/board?spaceId=${workspace.uid}`)
     }
   }
   return (
