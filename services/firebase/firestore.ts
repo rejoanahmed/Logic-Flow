@@ -11,44 +11,31 @@ import app from '.'
 const db = getFirestore(app)
 
 export type UserDoc = {
-  name: string
+  displayName: string
   email: string
   photoURL: string
-  id: string
+  uid: string
 }
 
 // users / userid/ workspaces/ [] of workspaces
 // workspaces / workspaceid / boards / [] of boards
+const WORKSPACE_COLLECTION = 'workspaces'
 const userPath = (uid: string) => `users/${uid}`
-const userWorkspacesPath = (uid: string) => `${userPath(uid)}/workspaces`
 const workspacePath = (uid: string) => `workspaces/${uid}/`
 
-export const addWorkSpaceToUser = async (
-  userId: string,
-  name: string,
-  email: string,
-  photoURL: string
-) => {
+export const addUser = async (user: UserDoc) => {
   try {
-    const userDoc = doc(db, userPath(userId))
-    await setDoc(
-      userDoc,
-      {
-        name,
-        email,
-        photoURL
-      },
-      { merge: true }
-    )
+    const docRef = await setDoc(doc(db, userPath(user.uid)), user)
+    return docRef
+  } catch (error) {
+    console.log(error)
+  }
+}
 
-    const collectionRef = collection(db, userWorkspacesPath(userId))
+export const addWorkSpaceToUser = async (userId: string) => {
+  try {
+    const collectionRef = collection(db, WORKSPACE_COLLECTION)
     const docRef = await addDoc(collectionRef, {
-      role: 'owner',
-      members: [userId]
-    })
-    const workspaceId = docRef.id
-    const workspaceDoc = doc(db, workspacePath(workspaceId))
-    await setDoc(workspaceDoc, {
       name: 'Untitled Workspace',
       elements: [],
       members: [

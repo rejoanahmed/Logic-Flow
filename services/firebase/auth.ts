@@ -1,14 +1,25 @@
-import { GoogleAuthProvider, getAuth, signInWithPopup } from 'firebase/auth'
+import {
+  GoogleAuthProvider,
+  getAdditionalUserInfo,
+  getAuth,
+  signInWithPopup
+} from 'firebase/auth'
 import app from '.'
+import { addUser } from './firestore'
 
 const auth = getAuth(app)
 
 export const SigninWithGoogle = async () => {
   const provider = new GoogleAuthProvider()
   const result = await signInWithPopup(auth, provider)
-  // const credential = GoogleAuthProvider.credentialFromResult(result)
-
-  // const token = credential?.accessToken
+  const additionalUserInfo = getAdditionalUserInfo(result)
+  if (additionalUserInfo?.isNewUser)
+    await addUser({
+      uid: result.user.uid,
+      displayName: result.user.displayName || '',
+      email: result.user.email || '',
+      photoURL: result.user.photoURL || ''
+    })
 
   const user = result.user
   return user
