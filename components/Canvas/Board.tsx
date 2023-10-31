@@ -10,13 +10,18 @@ import ActiveObjectInfoModal from './SelectedObjectInfoModal'
 import { ActiveObjectAtom } from 'state/LogicBoard'
 import { BoardElementType, ObjectType, WIRE_WIDTH } from 'lib/LogicBoardClass'
 import { useSpace } from '@ably/spaces/dist/mjs/react'
-import { UserAtom } from 'components/Navabr'
 import { uid } from 'lib/functions'
-import { SelectModalAtom, SidebarAtom, selectedToolAtom } from '@/state'
+import {
+  SelectModalAtom,
+  SidebarAtom,
+  UserAtom,
+  selectedToolAtom
+} from '@/state'
 import { SIDEBAR_WIDTH, TOGGLE_SIDEBAR_WIDTH } from 'lib/constants'
 
 const LogicBoard = () => {
   const space = useSpace()
+  console.log(space)
   const user = useAtomValue(UserAtom)
   if (user !== 'loading' && user) {
     space?.space?.enter({ name: user?.displayName, photoURL: user?.photoURL })

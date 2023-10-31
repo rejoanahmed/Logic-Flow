@@ -1,4 +1,4 @@
-import { UserAtom } from 'components/Navabr'
+import { UserAtom } from '@/state'
 import { Avatar } from 'flowbite-react'
 import { useAtomValue } from 'jotai'
 import { useRouter } from 'next/router'

@@ -2,11 +2,10 @@
 import { useAtom, useSetAtom } from 'jotai'
 import { useRouter } from 'next/navigation'
 import React from 'react'
-import { UserAtom } from './Navabr'
 import { SigninWithGoogle } from '@/services/firebase/auth'
 import { spaces } from '@/services/ably'
 import dynamic from 'next/dynamic'
-import { spaceAtom } from '@/state'
+import { UserAtom, spaceAtom } from '@/state'
 import { addWorkSpaceToUser } from '@/services/firebase/firestore'
 
 function CreateWorkspaceButton() {

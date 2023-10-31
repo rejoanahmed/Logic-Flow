@@ -1,3 +1,4 @@
+import { User } from 'firebase/auth'
 import { atom } from 'jotai'
 
 export const SidebarAtom = atom(true)
@@ -9,3 +10,5 @@ export const SelectModalAtom = atom({
   target: undefined as fabric.Object | undefined
 })
 export const spaceAtom = atom('')
+export const shareModalAtom = atom<'dismissible' | undefined>(undefined)
+export const UserAtom = atom<User | null | 'loading'>(null)

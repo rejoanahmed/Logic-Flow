@@ -2,11 +2,20 @@ import {
   addDoc,
   collection,
   doc,
+  getDoc,
+  getDocs,
   getFirestore,
   setDoc
 } from 'firebase/firestore'
 import app from '.'
 const db = getFirestore(app)
+
+export type UserDoc = {
+  name: string
+  email: string
+  photoURL: string
+  id: string
+}
 
 // users / userid/ workspaces/ [] of workspaces
 // workspaces / workspaceid / boards / [] of boards
@@ -74,6 +83,50 @@ export const shareWorkspace = async (
       },
       { merge: true }
     )
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const getAllUsers = async () => {
+  try {
+    const docsSnapshot = await getDocs(collection(db, 'users'))
+    const docs: any[] = []
+    docsSnapshot.forEach((doc) => {
+      docs.push({ id: doc.id, ...doc.data() })
+    })
+
+    return docs as UserDoc[]
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const getUserWorkspaces = async (userId: string) => {
+  try {
+    const docsSnapshot = await getDocs(
+      collection(db, userWorkspacesPath(userId))
+    )
+    const docs: any[] = []
+    docsSnapshot.forEach((doc) => {
+      docs.push({ id: doc.id, ...doc.data() })
+    })
+
+    return docs as {
+      id: string
+      role: string
+      members: string[]
+    }[]
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const getWorkspace = async (workspaceId: string) => {
+  try {
+    const docRef = doc(db, workspacePath(workspaceId))
+    const docSnap = await getDoc(docRef)
+    return { id: docSnap.id, ...docSnap.data() }
   } catch (error) {
     console.log(error)
   }

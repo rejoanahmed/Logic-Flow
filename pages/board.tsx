@@ -6,8 +6,7 @@ import { AblyProvider } from 'ably/react'
 import dynamic from 'next/dynamic'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { useRouter } from 'next/router'
-import { UserAtom } from 'components/Navabr'
-import { spaceAtom } from '@/state'
+import { UserAtom, spaceAtom } from '@/state'
 import { uid } from 'lib/functions'
 
 function BoardPage() {

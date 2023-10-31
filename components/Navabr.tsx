@@ -8,8 +8,9 @@ import { Avatar } from 'flowbite-react'
 import Link from 'next/link'
 import { Dropdown } from 'flowbite-react'
 import { NAVBAR_HEIGHT } from 'lib/constants'
+import ShareModal from './ShareModal'
+import { UserAtom } from '@/state'
 
-export const UserAtom = atom<User | null | 'loading'>(null)
 function Navabr() {
   const [user, setUser] = useAtom(UserAtom)
   useEffect(() => {
@@ -42,27 +43,30 @@ function Navabr() {
             <span className='text-orange-600'>Login</span>
           </button>
         ) : (
-          <Dropdown
-            label={
-              <Avatar
-                key={user.uid}
-                img={user.photoURL as string}
-                alt={user.displayName as string}
-                size='sm'
-                rounded
-              />
-            }
-            size={'sm'}
-            style={{ height: '40px' }}
-            dismissOnClick={false}
-          >
-            <Dropdown.Item>
-              <Link href={`/user/${user.uid}`}>Profile</Link>
-            </Dropdown.Item>
-            <Dropdown.Item>Settings</Dropdown.Item>
-            <Dropdown.Item>Earnings</Dropdown.Item>
-            <Dropdown.Item onClick={Signout}>Sign out</Dropdown.Item>
-          </Dropdown>
+          <>
+            <ShareModal />
+            <Dropdown
+              label={
+                <Avatar
+                  key={user.uid}
+                  img={user.photoURL as string}
+                  alt={user.displayName as string}
+                  size='sm'
+                  rounded
+                />
+              }
+              size={'sm'}
+              style={{ height: '40px' }}
+              dismissOnClick={false}
+            >
+              <Dropdown.Item>
+                <Link href={`/user/${user.uid}`}>Profile</Link>
+              </Dropdown.Item>
+              <Dropdown.Item>Settings</Dropdown.Item>
+              <Dropdown.Item>Earnings</Dropdown.Item>
+              <Dropdown.Item onClick={Signout}>Sign out</Dropdown.Item>
+            </Dropdown>
+          </>
         )}
       </div>
     </nav>
