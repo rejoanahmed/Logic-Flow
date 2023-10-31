@@ -19,7 +19,12 @@ function CreateWorkspaceButton() {
     if (!user || user === 'loading') {
       const currentUser = await SigninWithGoogle()
       if (currentUser) {
-        const workspace = await addWorkSpaceToUser(currentUser.uid)
+        const workspace = await addWorkSpaceToUser(
+          currentUser.uid,
+          currentUser.displayName || 'surprise',
+          currentUser.email!,
+          currentUser.photoURL!
+        )
         if (!workspace) return
         setUser(currentUser)
         const space = await spaces.get(workspace.id)
@@ -33,7 +38,12 @@ function CreateWorkspaceButton() {
         router.push(`/board?spaceId=${workspace.id}`)
       }
     } else {
-      const workspace = await addWorkSpaceToUser(user.uid)
+      const workspace = await addWorkSpaceToUser(
+        user.uid,
+        user.displayName || 'surprise',
+        user.email!,
+        user.photoURL!
+      )
       if (!workspace) return
       const space = await spaces.get(workspace.id)
       const members = await space.enter({
