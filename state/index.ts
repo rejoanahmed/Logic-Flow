@@ -1,3 +1,4 @@
+import { WorkspaceDoc } from '@/services/firebase/firestore'
 import { User } from 'firebase/auth'
 import { atom } from 'jotai'
 
@@ -12,3 +13,4 @@ export const SelectModalAtom = atom({
 export const spaceAtom = atom('')
 export const shareModalAtom = atom<'dismissible' | undefined>(undefined)
 export const UserAtom = atom<User | null | 'loading'>('loading')
+export const WorkspaceAtom = atom<WorkspaceDoc | null>(null)

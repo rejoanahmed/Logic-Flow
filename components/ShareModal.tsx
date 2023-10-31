@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import { useAtom, useAtomValue } from 'jotai'
-import { UserAtom, shareModalAtom, spaceAtom } from '@/state'
+import { UserAtom, WorkspaceAtom, shareModalAtom, spaceAtom } from '@/state'
 import { Avatar, Button, Label, Modal, TextInput } from 'flowbite-react'
 import { Share } from 'lucide-react'
 import {
@@ -17,12 +17,17 @@ function ShareModal() {
   const user = useAtomValue(UserAtom)
   const [users, setUsers] = useState<UserDoc[]>([])
   const [email, setEmail] = useState('')
+  const currentWorkspace = useAtomValue(WorkspaceAtom)
   useEffect(() => {
     getAllUsers().then((users) => {
       setUsers(users || [])
     })
   }, [])
-  if (!space || !user || user === 'loading') return null
+  if (!space || !user || user === 'loading' || !currentWorkspace) return null
+  const owner = currentWorkspace.members.find(
+    (m) => m.uid === user.uid && m.role === 'owner'
+  )
+  if (!owner) return null
   return (
     <>
       <Button

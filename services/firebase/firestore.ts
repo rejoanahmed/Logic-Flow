@@ -124,7 +124,6 @@ export const getAllUsers = async () => {
       docs.push({ uid: doc.id, ...(doc.data() as any) })
     })
 
-    console.log(docs)
     return docs as UserDoc[]
   } catch (error) {
     console.log(error)
@@ -142,7 +141,6 @@ export const getUserWorkspaces = async (userId: string) => {
     docsSnapshot.forEach((doc) => {
       docs.push({ uid: doc.id, ...(doc.data() as any) })
     })
-    console.log(docs)
     return docs as WorkspaceDoc[]
   } catch (error) {
     console.log(error)
