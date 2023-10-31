@@ -1,15 +1,14 @@
 'use client'
 
+import { SidebarAtom, selectedToolAtom } from '@/state'
 import { useCanvas } from 'hooks/useFabric'
-import { atom, useAtom, useSetAtom } from 'jotai'
-import { fabric } from 'fabric'
+import { useAtom, useSetAtom } from 'jotai'
+import {
+  SIDEBAR_WIDTH,
+  TOGGLE_SIDEBAR_WIDTH,
+  NAVBAR_HEIGHT
+} from 'lib/constants'
 import { useEffect } from 'react'
-
-export const SIDEBAR_WIDTH = 250
-export const TOGGLE_SIDEBAR_WIDTH = 8
-
-export const SidebarAtom = atom(true)
-export const selectedToolAtom = atom('')
 
 function BoardLayout({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useAtom(SidebarAtom)
@@ -28,9 +27,9 @@ function BoardLayout({ children }: { children: React.ReactNode }) {
           width: !open ? 0 : SIDEBAR_WIDTH - TOGGLE_SIDEBAR_WIDTH,
           minWidth: !open ? 0 : SIDEBAR_WIDTH - TOGGLE_SIDEBAR_WIDTH,
           maxWidth: !open ? 0 : SIDEBAR_WIDTH - TOGGLE_SIDEBAR_WIDTH,
-          maxHeight: 'calc(100vh - 64px)',
-          minHeight: 'calc(100vh - 64px)',
-          height: 'calc(100vh - 64px)'
+          maxHeight: `calc(100vh - ${NAVBAR_HEIGHT}px)`,
+          minHeight: `calc(100vh - ${NAVBAR_HEIGHT}px)`,
+          height: `calc(100vh - ${NAVBAR_HEIGHT}px)`
         }}
       >
         {['AND', 'OR', 'NOT', 'NAND', 'NOR', 'XOR', 'XNOR'].map((gate) => (

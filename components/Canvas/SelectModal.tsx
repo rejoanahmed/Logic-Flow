@@ -1,16 +1,9 @@
 'use client'
 
-import { useOnClickOutside } from 'hooks/useClickOutside'
+import { SelectModalAtom } from '@/state'
 import { useCanvas } from 'hooks/useFabric'
-import { atom, useAtom } from 'jotai'
-import { useEffect, useRef } from 'react'
-
-export const SelectModalAtom = atom({
-  show: false,
-  top: 0,
-  left: 0,
-  target: undefined as fabric.Object | undefined
-})
+import { useAtom } from 'jotai'
+import { useRef } from 'react'
 
 function SelectModal() {
   const [show, setShow] = useAtom(SelectModalAtom)

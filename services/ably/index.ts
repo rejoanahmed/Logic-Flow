@@ -1,9 +1,9 @@
 import { Realtime } from 'ably'
-// import Spaces from '@ably/spaces'
+import Spaces from '@ably/spaces'
 
 export const ablyClient = new Realtime.Promise({
-  authUrl: '/token',
-  authMethod: 'POST'
+  key: process.env.NEXT_PUBLIC_ABLY_API_KEY,
+  clientId: process.env.NEXT_PUBLIC_DEFAULT_CLIENT_ID || 'NO_CLIENT_ID'
 })
 
-// export const spaces = new Spaces(ablyClient)
+export const spaces = new Spaces(ablyClient)

@@ -6,7 +6,7 @@ import LogicBoard, {
   InputSchema,
   WireSchema
 } from 'lib/LogicBoardClass'
-const DEV_MODE = true
+const DEV_MODE = false
 
 const canvasAtom = atom<fabric.Canvas | null>(null)
 

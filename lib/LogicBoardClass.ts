@@ -112,6 +112,7 @@ class LogicBoard {
   }
 
   remove = (id: string) => {
+    console.log('remove', id)
     if (this.objectsMap.has(id)) {
       // check if it is wire
       if (this.wiresMap.has(id)) {

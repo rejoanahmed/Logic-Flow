@@ -7,6 +7,8 @@ import {
   WireSchema
 } from './LogicBoardClass'
 import { fabric } from 'fabric'
+import ShortUniqueId from 'short-unique-id'
+export const uid = new ShortUniqueId({ length: 8 })
 
 type Nodee<T extends 'input' | 'composite'> = {
   booleanFunction: T extends 'composite' ? string : 0 | 1

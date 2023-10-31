@@ -1,13 +1,22 @@
 'use client'
 import { atom, useAtom } from 'jotai'
-import React from 'react'
-import { User } from 'firebase/auth'
-import { SigninWithGoogle } from '@/services/firebase/auth'
+import React, { useEffect } from 'react'
+import { User, onAuthStateChanged } from 'firebase/auth'
+import auth, { SigninWithGoogle, Signout } from '@/services/firebase/auth'
 import AvatarStack from './AvatarStack'
+import { Avatar } from 'flowbite-react'
+import Link from 'next/link'
+import { Dropdown } from 'flowbite-react'
+import { NAVBAR_HEIGHT } from 'lib/constants'
 
 export const UserAtom = atom<User | null | 'loading'>(null)
 function Navabr() {
   const [user, setUser] = useAtom(UserAtom)
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      setUser(user)
+    })
+  }, [setUser])
   const handleLogin = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
@@ -17,17 +26,45 @@ function Navabr() {
       setUser(currentUser)
     }
   }
+
   return (
-    <nav className='flex px-10 py-4 bg-gray-200'>
-      <h1 className='font-bold text-2xl tracking-tighter'>
-        Logic <span className='text-purple-600'>Flow</span>
-      </h1>
-      <AvatarStack />
-      {!user && (
-        <button onClick={handleLogin} className='ml-auto'>
-          <span className='text-purple-600'>Login</span>
-        </button>
-      )}
+    <nav
+      className='flex px-10 justify-between items-center bg-gray-200'
+      style={{ maxHeight: NAVBAR_HEIGHT, minHeight: NAVBAR_HEIGHT }}
+    >
+      <Link href={'/'} className='font-bold text-2xl tracking-tighter'>
+        Logic <span className='text-orange-400'>Flow</span>
+      </Link>
+      <div className='flex items-center'>
+        <AvatarStack />
+        {!user || user === 'loading' ? (
+          <button onClick={handleLogin} className=''>
+            <span className='text-orange-600'>Login</span>
+          </button>
+        ) : (
+          <Dropdown
+            label={
+              <Avatar
+                key={user.uid}
+                img={user.photoURL as string}
+                alt={user.displayName as string}
+                size='sm'
+                rounded
+              />
+            }
+            size={'sm'}
+            style={{ height: '40px' }}
+            dismissOnClick={false}
+          >
+            <Dropdown.Item>
+              <Link href={`/user/${user.uid}`}>Profile</Link>
+            </Dropdown.Item>
+            <Dropdown.Item>Settings</Dropdown.Item>
+            <Dropdown.Item>Earnings</Dropdown.Item>
+            <Dropdown.Item onClick={Signout}>Sign out</Dropdown.Item>
+          </Dropdown>
+        )}
+      </div>
     </nav>
   )
 }

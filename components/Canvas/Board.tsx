@@ -3,22 +3,26 @@ import { fabric } from 'fabric'
 import { useCanvas } from 'hooks/useFabric'
 import { useEffect } from 'react'
 import useWindowSize from 'hooks/useWindowSize'
-import BoardLayout, {
-  SIDEBAR_WIDTH,
-  SidebarAtom,
-  TOGGLE_SIDEBAR_WIDTH,
-  selectedToolAtom
-} from './Layout'
+import BoardLayout from './Layout'
 import { useAtomValue, useSetAtom } from 'jotai'
-import SelectModal, { SelectModalAtom } from './SelectModal'
+import SelectModal from './SelectModal'
 import ActiveObjectInfoModal from './SelectedObjectInfoModal'
 import { ActiveObjectAtom } from 'state/LogicBoard'
-import ShortUniqueId from 'short-unique-id'
 import { BoardElementType, ObjectType, WIRE_WIDTH } from 'lib/LogicBoardClass'
-
-const uid = new ShortUniqueId({ length: 8 })
+import { useSpace } from '@ably/spaces/dist/mjs/react'
+import { UserAtom } from 'components/Navabr'
+import { uid } from 'lib/functions'
+import { SelectModalAtom, SidebarAtom, selectedToolAtom } from '@/state'
+import { SIDEBAR_WIDTH, TOGGLE_SIDEBAR_WIDTH } from 'lib/constants'
 
 const LogicBoard = () => {
+  const space = useSpace()
+  const user = useAtomValue(UserAtom)
+  if (user !== 'loading' && user) {
+    space?.space?.enter({ name: user?.displayName, photoURL: user?.photoURL })
+  } else {
+    space?.space?.enter({ name: 'Anonymous', photoURL: '' })
+  }
   const size = useWindowSize()
   const sidebarOpen = useAtomValue(SidebarAtom)
   const setSelectModal = useSetAtom(SelectModalAtom)
@@ -43,11 +47,10 @@ const LogicBoard = () => {
         moveCursor: 'pointer',
         hoverCursor: 'pointer'
       })
-      canvas.add(line)
+      canvas?.add(line)
 
-      canvas.on('mouse:down', (event) => {
-        console.log(event.e.button)
-        const target = canvas.findTarget(event.e, false)
+      canvas?.on('mouse:down', (event) => {
+        const target = canvas?.findTarget(event.e, false)
         if (target?.data?.type === ObjectType.Wire) {
           setActiveObject(target)
         }
@@ -97,29 +100,29 @@ const LogicBoard = () => {
         }
       })
 
-      canvas.on('mouse:move', (event) => {
+      canvas?.on('mouse:move', (event) => {
         if (isPanning) {
           const deltaX = event.e.clientX - lastX
           const deltaY = event.e.clientY - lastY
           lastX = event.e.clientX
           lastY = event.e.clientY
-          canvas.relativePan(new fabric.Point(deltaX, deltaY))
+          canvas?.relativePan(new fabric.Point(deltaX, deltaY))
         }
 
         if (wireStart) {
-          const pointer = canvas.getPointer(event.e)
+          const pointer = canvas?.getPointer(event.e)
           const x = pointer.x
           const y = pointer.y
           line.set({ x1: wireStart.left!, y1: wireStart.top!, x2: x, y2: y })
           line.setCoords()
-          canvas.renderAll()
+          canvas?.renderAll()
         }
       })
 
-      canvas.on('mouse:up', (event) => {
+      canvas?.on('mouse:up', (event) => {
         isPanning = false
         if (wireStart) {
-          const obj = canvas.findTarget(event.e, false)
+          const obj = canvas?.findTarget(event.e, false)
           if (
             (wireStart.data.type === ObjectType.ComponentOutput &&
               obj?.data?.type === ObjectType.ComponentInput) ||
@@ -140,28 +143,28 @@ const LogicBoard = () => {
         wireStart = undefined
         wireEnd = undefined
         line.set({ x1: 0, y1: 0, x2: 0, y2: 0 })
-        canvas.renderAll()
+        canvas?.renderAll()
       })
 
       // Zooming with the mouse wheel
-      canvas.on('mouse:wheel', (event) => {
+      canvas?.on('mouse:wheel', (event) => {
         const delta = event.e.deltaY
         const zoomFactor = 1.05 // Adjust this value for your preferred zoom sensitivity
         const zoomPoint = new fabric.Point(
-          canvas.getCenter().top,
-          canvas.getCenter().left
+          canvas?.getCenter().top,
+          canvas?.getCenter().left
         )
         if (delta > 0) {
           // Zoom out
-          canvas.zoomToPoint(
+          canvas?.zoomToPoint(
             zoomPoint,
-            Math.min(1.2, canvas.getZoom() * zoomFactor)
+            Math.min(1.2, canvas?.getZoom() * zoomFactor)
           )
         } else {
           // Zoom in
-          canvas.zoomToPoint(
+          canvas?.zoomToPoint(
             zoomPoint,
-            Math.max(0.2, canvas.getZoom() / zoomFactor)
+            Math.max(0.2, canvas?.getZoom() / zoomFactor)
           )
         }
         event.e.preventDefault() // Prevent the page from scrolling
@@ -172,19 +175,19 @@ const LogicBoard = () => {
   // resizing the canvas
   useEffect(() => {
     if (canvas !== undefined && canvas !== null && size.width && size.height) {
-      canvas.setDimensions({
+      canvas?.setDimensions({
         width:
           size.width - (sidebarOpen ? SIDEBAR_WIDTH : TOGGLE_SIDEBAR_WIDTH),
         height: size.height - 64
       })
     }
-  }, [canvas, size, sidebarOpen])
+  }, [canvas?.setDimensions, size, sidebarOpen])
 
   // drop event
   useEffect(() => {
     if (LogicBoard && canvas) {
-      canvas.on('drop', (event) => {
-        const canvasPosition = canvas.getPointer(event.e)
+      canvas?.on('drop', (event) => {
+        const canvasPosition = canvas?.getPointer(event.e)
 
         const left = canvasPosition.x
         const top = canvasPosition.y
@@ -233,7 +236,7 @@ const LogicBoard = () => {
     document.addEventListener('keydown', (event) => {
       if (canvas !== null && event.code === 'Backspace') {
         //  editing textbox
-        if (canvas.getActiveObject()?.type === 'textbox') return
+        if (canvas?.getActiveObject()?.type === 'textbox') return
 
         setActiveObject((prev) => {
           const id = prev?.data?.parent || prev?.data?.id
