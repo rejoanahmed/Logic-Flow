@@ -10,9 +10,11 @@ import { Dropdown } from 'flowbite-react'
 import { NAVBAR_HEIGHT } from 'lib/constants'
 import ShareModal from './ShareModal'
 import { UserAtom } from '@/state'
+import { useRouter } from 'next/router'
 
 function Navabr() {
   const [user, setUser] = useAtom(UserAtom)
+  const router = useRouter()
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       setUser(user)
@@ -44,7 +46,7 @@ function Navabr() {
           </button>
         ) : (
           <>
-            <ShareModal />
+            {router.pathname.includes('board') && <ShareModal />}
             <Dropdown
               label={
                 <Avatar
