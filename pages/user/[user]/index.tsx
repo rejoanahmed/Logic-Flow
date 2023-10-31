@@ -1,3 +1,4 @@
+import { spaces } from '@/services/ably'
 import { WorkspaceDoc, getUserWorkspaces } from '@/services/firebase/firestore'
 import { UserAtom } from '@/state'
 import { Avatar } from 'flowbite-react'
@@ -20,10 +21,16 @@ function UserDashBoard() {
     router.replace('/')
     return
   }
+  const ownedBoards = boards.filter((b) =>
+    b.members.find((m) => m.role === 'owner')
+  )
+  const sharedBoards = boards.filter(
+    (b) => !b.members.find((m) => m.role === 'owner')
+  )
   return (
     <div className='container mx-auto'>
-      <Section boards={[]} title='Your Boards' />
-      <Section boards={[]} title='shared With You' />
+      <Section boards={ownedBoards} title='Your Boards' />
+      <Section boards={sharedBoards} title='shared With You' />
     </div>
   )
 }
@@ -32,17 +39,24 @@ const Section = ({
   boards,
   title
 }: {
-  boards: {
-    owner: string
-    title: string
-    description: string
-    ownerPhoto: string
-    id: string
-  }[]
+  boards: WorkspaceDoc[]
   title: string
 }) => {
   const router = useRouter()
-  const handleClick = (id: string) => {
+  const user = useAtomValue(UserAtom)
+  if (!user) {
+    router.replace('/')
+    return null
+  }
+
+  if (user === 'loading') return null
+
+  const handleClick = async (id: string) => {
+    const space = await spaces.get(id)
+    const members = await space.enter({
+      photoURL: user.photoURL,
+      name: user.displayName
+    })
     router.push(`/board?spaceId=${id}`)
   }
   return (
@@ -53,13 +67,19 @@ const Section = ({
           <div
             className='flex basis-56 border rounded-lg p-4 flex-shrink-0 flex-col gap-2'
             key={i}
-            onClick={() => handleClick(board.id)}
+            onClick={() => handleClick(board.uid)}
           >
             <div className='flex gap-2 items-center bg-slate-500 -mx-4 -mt-4 rounded-t-md px-2 py-1 text-slate-200'>
-              <Avatar img={board.ownerPhoto} size='sm' rounded />
-              <p>{board.owner}</p>
+              <Avatar
+                img={board.members.find((m) => m.role === 'owner')?.photoURL}
+                size='sm'
+                rounded
+              />
+              <p>
+                {board.members.find((m) => m.role === 'owner')?.displayName}
+              </p>
             </div>
-            <h3 className='text-lg font-semibold'>{board.title}</h3>
+            <h3 className='text-lg font-semibold'>{board.name}</h3>
             <p className='text-sm'>{board.description}</p>
           </div>
         ))}
