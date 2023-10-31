@@ -45,7 +45,6 @@ function BoardPage() {
 
       return () => {
         spaces.get(spaceId).then((space) => {
-          console.log('leaving space')
           space.leave()
           space.unsubscribe('update', listener)
         })
