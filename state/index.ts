@@ -11,4 +11,4 @@ export const SelectModalAtom = atom({
 })
 export const spaceAtom = atom('')
 export const shareModalAtom = atom<'dismissible' | undefined>(undefined)
-export const UserAtom = atom<User | null | 'loading'>(null)
+export const UserAtom = atom<User | null | 'loading'>('loading')

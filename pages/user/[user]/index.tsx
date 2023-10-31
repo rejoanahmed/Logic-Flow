@@ -18,7 +18,8 @@ function UserDashBoard() {
       })
   }, [user])
   if (!user) {
-    router.replace('/')
+    typeof window !== 'undefined' && router.replace('/')
+    console.log('redirecting')
     return
   }
   const ownedBoards = boards.filter((b) =>
