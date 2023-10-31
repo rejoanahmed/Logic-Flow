@@ -6,7 +6,7 @@ import { SigninWithGoogle } from '@/services/firebase/auth'
 import { spaces } from '@/services/ably'
 import dynamic from 'next/dynamic'
 import { UserAtom, spaceAtom } from '@/state'
-import { addWorkSpaceToUser } from '@/services/firebase/firestore'
+import { createNewWorkspace } from '@/services/firebase/firestore'
 
 function CreateWorkspaceButton() {
   const router = useRouter()
@@ -18,7 +18,12 @@ function CreateWorkspaceButton() {
     if (!user || user === 'loading') {
       const currentUser = await SigninWithGoogle()
       if (currentUser) {
-        const workspace = await addWorkSpaceToUser(currentUser.uid)
+        const workspace = await createNewWorkspace(
+          currentUser.uid,
+          currentUser.displayName!,
+          currentUser.email!,
+          currentUser.photoURL!
+        )
         if (!workspace) return
         setUser(currentUser)
         const space = await spaces.get(workspace.id)
@@ -32,7 +37,12 @@ function CreateWorkspaceButton() {
         router.push(`/board?spaceId=${workspace.id}`)
       }
     } else {
-      const workspace = await addWorkSpaceToUser(user.uid)
+      const workspace = await createNewWorkspace(
+        user.uid,
+        user.displayName!,
+        user.email!,
+        user.photoURL!
+      )
       if (!workspace) return
       const space = await spaces.get(workspace.id)
       const members = await space.enter({

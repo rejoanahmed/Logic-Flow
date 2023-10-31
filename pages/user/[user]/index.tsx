@@ -1,57 +1,29 @@
+import { WorkspaceDoc, getUserWorkspaces } from '@/services/firebase/firestore'
 import { UserAtom } from '@/state'
 import { Avatar } from 'flowbite-react'
 import { useAtomValue } from 'jotai'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 
-const mockBoards = [
-  {
-    owner: 'user1',
-    title: 'Board 1',
-    description: 'This is a board'
-  },
-  {
-    owner: 'user1',
-    title: 'Board 2',
-    description: 'This is a board'
-  },
-  {
-    owner: 'user1',
-    title: 'Board 3',
-    description: 'This is a board'
-  },
-  {
-    owner: 'user1',
-    title: 'Board 1',
-    description: 'This is a board'
-  },
-  {
-    owner: 'user1',
-    title: 'Board 2',
-    description: 'This is a board'
-  },
-  {
-    owner: 'user1',
-    title: 'Board 3',
-    description: 'This is a board'
-  }
-]
-
 function UserDashBoard() {
   const user = useAtomValue(UserAtom)
   const router = useRouter()
-  const [boards, setBoards] = useState([])
+  const [boards, setBoards] = useState<WorkspaceDoc[]>([])
   useEffect(() => {
-    const fetchBoards = async () => {}
-  }, [])
+    user !== 'loading' &&
+      user &&
+      getUserWorkspaces(user.uid).then((boards) => {
+        boards && setBoards(boards)
+      })
+  }, [user])
   if (!user) {
     router.replace('/')
     return
   }
   return (
     <div className='container mx-auto'>
-      <Section boards={mockBoards} title='Your Boards' />
-      <Section boards={mockBoards} title='shared With You' />
+      <Section boards={[]} title='Your Boards' />
+      <Section boards={[]} title='shared With You' />
     </div>
   )
 }

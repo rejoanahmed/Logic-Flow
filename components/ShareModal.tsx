@@ -56,15 +56,22 @@ function ShareModal() {
           </form>
           <div className='flex flex-col gap-2'>
             {users
-              .filter((u) => u.id !== user.uid)
-              .map((user) => (
-                <div className='flex gap-2' key={user.id}>
+              .filter((u) => u.uid !== user.uid)
+              .map((v) => (
+                <div className='flex gap-2' key={v.uid}>
                   <div className='flex flex-grow items-center gap-2 px-4 py-2 rounded-md bg-slate-500 text-slate-200'>
-                    <Avatar img={user.photoURL} size='sm' rounded />
-                    <p>{user.name}</p>
+                    <Avatar img={v.photoURL} size='sm' rounded />
+                    <p>{v.displayName}</p>
                   </div>
                   <Button
-                    onClick={() => shareWorkspace(space, user.id)}
+                    onClick={() =>
+                      shareWorkspace(space, user.uid, {
+                        photoURL: v.photoURL,
+                        displayName: v.displayName,
+                        uid: v.uid,
+                        email: v.email
+                      })
+                    }
                     className='bg-slate-400 hover:bg-slate-500 mr-2'
                   >
                     <Share size={18} />
