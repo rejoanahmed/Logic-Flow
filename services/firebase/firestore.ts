@@ -88,10 +88,12 @@ export const shareWorkspace = async (
     const workspaceDoc = doc(db, workspacePath(workspaceId))
     const docSnap = await getDoc(workspaceDoc)
     if (docSnap.exists()) {
+      console.log('exists')
       const prevMembers = docSnap.data()?.members || []
       const currentMemberRole = prevMembers.find((member: any) => {
-        return member.id === userId
+        return member.uid === userId
       })
+      console.log(currentMemberRole)
       if (!currentMemberRole) return
       if (currentMemberRole.role !== 'owner') return
       const newMembers = prevMembers.concat({

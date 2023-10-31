@@ -9,25 +9,29 @@ import React, { useEffect, useState } from 'react'
 function UserDashBoard() {
   const user = useAtomValue(UserAtom)
   const router = useRouter()
-  const [boards, setBoards] = useState<WorkspaceDoc[]>([])
+  const [ownedBoards, setOwnedBoards] = useState<WorkspaceDoc[]>([])
+  const [sharedBoards, setSharedBoards] = useState<WorkspaceDoc[]>([])
   useEffect(() => {
     user !== 'loading' &&
       user &&
       getUserWorkspaces(user.uid).then((boards) => {
-        boards && setBoards(boards)
+        if (boards) {
+          const ownedBoards = boards.filter((b) =>
+            b.members.find((m) => m.role === 'owner' && m.uid === user.uid)
+          )
+          const sharedBoards = boards.filter(
+            (b) =>
+              !b.members.find((m) => m.role === 'owner' && m.uid === user.uid)
+          )
+          setOwnedBoards(ownedBoards)
+          setSharedBoards(sharedBoards)
+        }
       })
   }, [user])
   if (!user) {
     typeof window !== 'undefined' && router.replace('/')
-    console.log('redirecting')
     return
   }
-  const ownedBoards = boards.filter((b) =>
-    b.members.find((m) => m.role === 'owner')
-  )
-  const sharedBoards = boards.filter(
-    (b) => !b.members.find((m) => m.role === 'owner')
-  )
   return (
     <div className='container mx-auto'>
       <Section boards={ownedBoards} title='Your Boards' />
