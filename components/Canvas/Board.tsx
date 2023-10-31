@@ -20,14 +20,6 @@ import {
 import { SIDEBAR_WIDTH, TOGGLE_SIDEBAR_WIDTH } from 'lib/constants'
 
 const LogicBoard = () => {
-  const space = useSpace()
-  console.log(space)
-  const user = useAtomValue(UserAtom)
-  if (user !== 'loading' && user) {
-    space?.space?.enter({ name: user?.displayName, photoURL: user?.photoURL })
-  } else {
-    space?.space?.enter({ name: 'Anonymous', photoURL: '' })
-  }
   const size = useWindowSize()
   const sidebarOpen = useAtomValue(SidebarAtom)
   const setSelectModal = useSetAtom(SelectModalAtom)

@@ -23,6 +23,7 @@ function BoardPage() {
   const setWorkspace = useSetAtom(WorkspaceAtom)
 
   useEffect(() => {
+    if (user === 'loading') return
     if (spaceId) {
       getWorkspace(spaceId).then((workspace) => {
         if (!workspace) {
@@ -32,7 +33,6 @@ function BoardPage() {
         setWorkspace(workspace)
       })
       user &&
-        user !== 'loading' &&
         spaces.get(spaceId).then((space) => {
           space.enter({
             photoURL: user?.photoURL,
@@ -42,15 +42,18 @@ function BoardPage() {
           // subscribe to space updates
           space.subscribe('update', listener)
         })
-
-      return () => {
+    }
+    return () => {
+      user &&
+        spaceId &&
         spaces.get(spaceId).then((space) => {
           space.leave()
           space.unsubscribe('update', listener)
         })
-      }
     }
   }, [spaceId, user])
+
+  if (user === 'loading') return <p>loading</p>
 
   if (!spaceId) {
     if (router.query.spaceId) {

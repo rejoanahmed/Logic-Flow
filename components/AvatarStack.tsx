@@ -16,17 +16,20 @@ function AvatarStack() {
     const f = async () => {
       if (!spaceId) return
       const space = await spaces.get(spaceId)
+
+      const othersMemberInfo = await space.members.getOthers()
+      setOthers(othersMemberInfo.filter((m) => m.isConnected))
       space.members.subscribe(async (members) => {
         const otherMembers = await space.members.getOthers()
         console.log(otherMembers)
-        setOthers(otherMembers)
+        setOthers(otherMembers.filter((m) => m.isConnected))
       })
     }
     f()
     return () => {
       // unsubscribing to all events occur when board page is left
     }
-  }, [])
+  }, [spaceId])
   console.log(others)
   return (
     <div className='flex flex-wrap'>
