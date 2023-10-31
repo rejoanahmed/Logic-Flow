@@ -27,7 +27,6 @@ function ShareModal() {
   const owner = currentWorkspace.members.find(
     (m) => m.uid === user.uid && m.role === 'owner'
   )
-  console.log(owner)
   if (!owner) return null
   return (
     <>

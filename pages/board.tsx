@@ -9,6 +9,11 @@ import { useRouter } from 'next/router'
 import { UserAtom, WorkspaceAtom, spaceAtom } from '@/state'
 import { getWorkspace } from '@/services/firebase/firestore'
 import { useEffect } from 'react'
+import { SpaceEvents } from '@ably/spaces'
+
+const listener = (stateChange: SpaceEvents.UpdateEvent) => {
+  console.log(stateChange.members)
+}
 
 function BoardPage() {
   const spaceId = useAtomValue(spaceAtom)
@@ -26,8 +31,27 @@ function BoardPage() {
         }
         setWorkspace(workspace)
       })
+      user &&
+        user !== 'loading' &&
+        spaces.get(spaceId).then((space) => {
+          space.enter({
+            photoURL: user?.photoURL,
+            displayName: user?.displayName
+          })
+
+          // subscribe to space updates
+          space.subscribe('update', listener)
+        })
+
+      return () => {
+        spaces.get(spaceId).then((space) => {
+          console.log('leaving space')
+          space.leave()
+          space.unsubscribe('update', listener)
+        })
+      }
     }
-  }, [spaceId])
+  }, [spaceId, user])
 
   if (!spaceId) {
     if (router.query.spaceId) {

@@ -14,7 +14,7 @@ function AvatarStack() {
           <Avatar
             key={member.clientId}
             img={member.profileData!.photoURL as string}
-            alt={member.profileData!.name as string}
+            alt={member.profileData!.displayName as string}
             size='sm'
             className='border-2 border-white'
           />
