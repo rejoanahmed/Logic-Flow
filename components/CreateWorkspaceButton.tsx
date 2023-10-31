@@ -29,6 +29,7 @@ function CreateWorkspaceButton() {
         })
         console.log(members)
         setSpaceId(workspace.id)
+        console.log('routing')
         router.push(`/board?spaceId=${workspace.id}`)
       }
     } else {
