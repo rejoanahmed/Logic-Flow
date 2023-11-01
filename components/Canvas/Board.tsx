@@ -15,19 +15,67 @@ import {
   SelectModalAtom,
   SidebarAtom,
   UserAtom,
-  selectedToolAtom
+  selectedToolAtom,
+  spaceAtom
 } from '@/state'
-import { SIDEBAR_WIDTH, TOGGLE_SIDEBAR_WIDTH } from 'lib/constants'
+import {
+  RANDOM_MOUSE_COLOR,
+  SIDEBAR_WIDTH,
+  TOGGLE_SIDEBAR_WIDTH
+} from 'lib/constants'
+import { spaces } from '@/services/ably'
 
 const LogicBoard = () => {
+  const spaceName = useAtomValue(spaceAtom)
   const size = useWindowSize()
   const sidebarOpen = useAtomValue(SidebarAtom)
   const setSelectModal = useSetAtom(SelectModalAtom)
   const setActiveObject = useSetAtom(ActiveObjectAtom)
   const gate = useAtomValue(selectedToolAtom)
   const [canvas, setCanvasElRef, LogicBoard] = useCanvas(
-    (canvas, LogicBoard) => {
+    async (canvas, LogicBoard, spaceName) => {
+      const space = await spaces.get(spaceName)
       // Panning
+      space.cursors.subscribe('update', async (cursorUpdate) => {
+        console.log(cursorUpdate)
+        const members = await space.members.getOthers()
+        console.log(members)
+        const member = members.find(
+          (member) => member.connectionId === cursorUpdate.data!.connectionId
+        )
+        console.log(member)
+        if (!member) return
+        if (LogicBoard.objectsMap.get(member.connectionId + 'cursor')) {
+          const cursor = LogicBoard.objectsMap.get(
+            member.connectionId + 'cursor'
+          )
+          cursor?.set({
+            left: cursorUpdate.position.x,
+            top: cursorUpdate.position.y
+          })
+          canvas?.renderAll()
+        } else {
+          const cursor = new fabric.Circle({
+            radius: 5,
+            fill: cursorUpdate.data!.color as string,
+            left: cursorUpdate.position.x,
+            top: cursorUpdate.position.y,
+            hasControls: false,
+            hasBorders: false,
+            selectable: false,
+            hoverCursor: 'pointer',
+            data: {
+              type: ObjectType.Cursor,
+              id: member.connectionId + 'cursor'
+            }
+          })
+
+          LogicBoard?.objectsMap.set(member.connectionId + 'cursor', cursor)
+
+          canvas?.add(cursor)
+          canvas?.renderAll()
+        }
+      })
       document.addEventListener('contextmenu', (event) =>
         event.preventDefault()
       )
@@ -97,7 +145,24 @@ const LogicBoard = () => {
         }
       })
 
-      canvas?.on('mouse:move', (event) => {
+      canvas?.on('mouse:move', async (event) => {
+        const pointer = canvas?.getPointer(event.e)
+        const x = pointer.x
+        const y = pointer.y
+
+        // update cursor position
+        console.log('update cursor position')
+        const userConnectionId = await space.members.getSelf()
+        console.log(userConnectionId)
+        userConnectionId &&
+          space.cursors.set({
+            position: { x, y },
+            data: {
+              color: RANDOM_MOUSE_COLOR,
+              connectionId: userConnectionId.connectionId
+            }
+          })
+
         if (isPanning) {
           const deltaX = event.e.clientX - lastX
           const deltaY = event.e.clientY - lastY
@@ -107,9 +172,6 @@ const LogicBoard = () => {
         }
 
         if (wireStart) {
-          const pointer = canvas?.getPointer(event.e)
-          const x = pointer.x
-          const y = pointer.y
           line.set({ x1: wireStart.left!, y1: wireStart.top!, x2: x, y2: y })
           line.setCoords()
           canvas?.renderAll()
@@ -166,7 +228,11 @@ const LogicBoard = () => {
         }
         event.e.preventDefault() // Prevent the page from scrolling
       })
-    }
+    },
+    spaceName,
+    false,
+    [],
+    [spaceName]
   )
 
   // resizing the canvas

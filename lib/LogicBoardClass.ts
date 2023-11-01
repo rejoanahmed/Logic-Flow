@@ -7,6 +7,7 @@ import {
   removeComponent,
   removeWire
 } from './functions'
+import { Space } from '@ably/spaces'
 const uid = new ShortUniqueId({ length: 8 })
 
 export const RADIUS = 5
@@ -19,7 +20,8 @@ export enum ObjectType {
   Master = 'master',
   ComponentInput = 'component-input',
   ComponentOutput = 'component-output',
-  Wire = 'wire'
+  Wire = 'wire',
+  Cursor = 'cursor'
 }
 
 export enum BoardElementType {
@@ -66,16 +68,17 @@ class LogicBoard {
   board: (ComponentSchema | InputSchema | WireSchema)[] = []
   // wire map different from board
   wiresMap: Map<string, WireSchema> = new Map()
-
+  space: Space
   constructor(
     canvas: fabric.Canvas,
+    space: Space,
     board?: (ComponentSchema | InputSchema | WireSchema)[]
   ) {
     this.canvas = canvas
     this.board = []
     this.objectsMap = new Map()
     this.wiresMap = new Map()
-
+    this.space = space
     if (board) {
       let components: (ComponentSchema | InputSchema)[] = [],
         wires: WireSchema[] = []

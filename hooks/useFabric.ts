@@ -6,12 +6,19 @@ import LogicBoard, {
   InputSchema,
   WireSchema
 } from 'lib/LogicBoardClass'
+import { Space } from '@ably/spaces'
+import { spaces } from '@/services/ably'
 const DEV_MODE = false
 
 const canvasAtom = atom<fabric.Canvas | null>(null)
 
 export function useCanvas(
-  init?: (canvas: fabric.Canvas, LogicBoard: LogicBoard) => void,
+  init?: (
+    canvas: fabric.Canvas,
+    LogicBoard: LogicBoard,
+    spaceName: string
+  ) => void,
+  spaceName?: string,
   saveState = false,
   boardData?: (ComponentSchema | InputSchema | WireSchema)[],
   deps: any[] = []
@@ -22,10 +29,10 @@ export function useCanvas(
   const LogicBoardRef = useRef<LogicBoard | null>(null)
 
   const setRef = useCallback(
-    (ref: HTMLCanvasElement | null) => {
+    async (ref: HTMLCanvasElement | null) => {
       //@ts-ignore
       elementRef.current = ref
-
+      if (!spaceName) return
       // save state
       if (DEV_MODE && saveState && fc) {
         data.current = fc.toJSON()
@@ -44,12 +51,13 @@ export function useCanvas(
         fireMiddleClick: true,
         preserveObjectStacking: true
       })
-      const board = new LogicBoard(canvas, boardData)
+      const space = await spaces.get(spaceName)
+      const board = new LogicBoard(canvas, space, boardData)
       LogicBoardRef.current = board
       console.log('setting ref')
       setFc(canvas)
       // invoke callback
-      init && init(canvas, board)
+      init && spaceName && init(canvas, board, spaceName)
       // restore state
       if (DEV_MODE && saveState && data.current) {
         canvas.loadFromJSON(data.current, () => {})
