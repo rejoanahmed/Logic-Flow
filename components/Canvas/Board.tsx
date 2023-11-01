@@ -295,6 +295,7 @@ const LogicBoard = () => {
     const sp = space.space
     sp.channel.subscribe('add', async (update) => {
       const owner = await sp.members.getSelf()
+      console.log(update, owner)
       if (owner && owner.connectionId === update.connectionId) return
       const data = update.data
       console.log('adding from remote')

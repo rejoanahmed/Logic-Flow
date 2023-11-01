@@ -77,7 +77,7 @@ function ShareModal() {
                         email: v.email
                       })
                     }
-                    className='bg-slate-400 hover:bg-slate-500 mr-2'
+                    className='bg-slate-400 hover:bg-slate-500'
                   >
                     <Share size={18} />
                   </Button>
@@ -85,12 +85,6 @@ function ShareModal() {
               ))}
           </div>
         </Modal.Body>
-        <Modal.Footer>
-          <Button onClick={() => setOpenModal(undefined)}>I accept</Button>
-          <Button color='gray' onClick={() => setOpenModal(undefined)}>
-            Decline
-          </Button>
-        </Modal.Footer>
       </Modal>
     </>
   )
