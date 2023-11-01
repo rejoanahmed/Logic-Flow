@@ -9,7 +9,6 @@ import SelectModal from './SelectModal'
 import ActiveObjectInfoModal from './SelectedObjectInfoModal'
 import { ActiveObjectAtom } from 'state/LogicBoard'
 import { BoardElementType, ObjectType, WIRE_WIDTH } from 'lib/LogicBoardClass'
-import { uid } from 'lib/functions'
 import {
   SelectModalAtom,
   SidebarAtom,
@@ -142,7 +141,7 @@ const LogicBoard = () => {
           setActiveObject(event.target)
         }
       })
-
+      let timeoutId: NodeJS.Timeout
       canvas?.on('mouse:move', async (event) => {
         const pointer = canvas?.getPointer(event.e)
         const x = pointer.x
@@ -150,7 +149,8 @@ const LogicBoard = () => {
 
         // update cursor position
         const userConnectionId = await space.members.getSelf()
-        userConnectionId &&
+        if (userConnectionId) {
+          console.log('updating cursor position')
           space.cursors.set({
             position: { x, y },
             data: {
@@ -158,6 +158,7 @@ const LogicBoard = () => {
               connectionId: userConnectionId.connectionId
             }
           })
+        }
 
         if (isPanning) {
           const deltaX = event.e.clientX - lastX

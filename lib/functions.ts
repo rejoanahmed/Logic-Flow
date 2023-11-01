@@ -196,13 +196,18 @@ export const addComponent = (
     objectsMap.set(params.outputs[i].id, circle)
     canvas.add(circle)
   }
-
+  let timeoutId: NodeJS.Timeout
   master.on('moving', () => {
-    space.channel.publish('move', {
-      id: params.id,
-      x: master.left,
-      y: master.top
-    })
+    clearTimeout(timeoutId) // Clear any existing timeout
+
+    timeoutId = setTimeout(async () => {
+      // update cursor position
+      space.channel.publish('move', {
+        id: params.id,
+        x: master.left,
+        y: master.top
+      })
+    }, 50)
     moveComponent(
       master.left!,
       master.top!,
