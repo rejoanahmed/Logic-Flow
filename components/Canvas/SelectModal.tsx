@@ -1,14 +1,13 @@
 'use client'
 
-import { SelectModalAtom } from '@/state'
-import { useCanvas } from 'hooks/useFabric'
-import { useAtom } from 'jotai'
+import { CanvasAtom, SelectModalAtom } from '@/state'
+import { useAtom, useAtomValue } from 'jotai'
 import { useRef } from 'react'
 
 function SelectModal() {
   const [show, setShow] = useAtom(SelectModalAtom)
   const ref = useRef(null)
-  const [canvas] = useCanvas()
+  const canvas = useAtomValue(CanvasAtom)
   if (!canvas) return null
 
   return (

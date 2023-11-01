@@ -20,13 +20,6 @@ function BoardPage() {
   useEffect(() => {
     if (user === 'loading') return
     if (spaceId) {
-      getWorkspace(spaceId).then((workspace) => {
-        if (!workspace) {
-          router.replace('/', undefined, { shallow: true })
-          return
-        }
-        setWorkspace(workspace)
-      })
       user &&
         spaces.get(spaceId).then((space) => {
           space.enter({
@@ -34,6 +27,17 @@ function BoardPage() {
             displayName: user?.displayName
           })
         })
+      setTimeout(
+        () =>
+          getWorkspace(spaceId).then((workspace) => {
+            if (!workspace) {
+              router.replace('/', undefined, { shallow: true })
+              return
+            }
+            setWorkspace(workspace)
+          }),
+        1000
+      )
     }
     if (!spaceId) {
       if (router.query.spaceId) {

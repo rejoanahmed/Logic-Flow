@@ -28,7 +28,7 @@ export type WorkspaceDoc = {
   uid: string
   name: string
   description: string
-  elements: WireSchema | ComponentSchema | InputSchema[]
+  elements: (WireSchema | ComponentSchema | InputSchema)[]
   memberIds: string[]
   members: WorkspaceMemberType[]
 }
@@ -153,6 +153,18 @@ export const getWorkspace = async (workspaceId: string) => {
     const docRef = doc(db, workspacePath(workspaceId))
     const docSnap = await getDoc(docRef)
     return { uid: docSnap.id, ...docSnap.data() } as WorkspaceDoc
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const updateWorkspace = async (
+  id: string,
+  elements: (WireSchema | ComponentSchema | InputSchema)[]
+) => {
+  try {
+    const docRef = doc(db, workspacePath(id))
+    await setDoc(docRef, { elements }, { merge: true })
   } catch (error) {
     console.log(error)
   }

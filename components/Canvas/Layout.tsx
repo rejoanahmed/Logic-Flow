@@ -1,8 +1,7 @@
 'use client'
 
-import { SidebarAtom, selectedToolAtom } from '@/state'
-import { useCanvas } from 'hooks/useFabric'
-import { useAtom, useSetAtom } from 'jotai'
+import { CanvasAtom, SidebarAtom, selectedToolAtom } from '@/state'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import {
   SIDEBAR_WIDTH,
   TOGGLE_SIDEBAR_WIDTH,
@@ -12,7 +11,7 @@ import { useEffect } from 'react'
 
 function BoardLayout({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useAtom(SidebarAtom)
-  const [canvas] = useCanvas()
+  const canvas = useAtomValue(CanvasAtom)
   const setSelectedTool = useSetAtom(selectedToolAtom)
 
   useEffect(() => {
