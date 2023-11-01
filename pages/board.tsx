@@ -9,11 +9,6 @@ import { useRouter } from 'next/router'
 import { UserAtom, WorkspaceAtom, spaceAtom } from '@/state'
 import { getWorkspace } from '@/services/firebase/firestore'
 import { useEffect } from 'react'
-import { SpaceEvents } from '@ably/spaces'
-
-const listener = (stateChange: SpaceEvents.UpdateEvent) => {
-  // console.log(stateChange.members)
-}
 
 function BoardPage() {
   const spaceId = useAtomValue(spaceAtom)
@@ -38,9 +33,6 @@ function BoardPage() {
             photoURL: user?.photoURL,
             displayName: user?.displayName
           })
-
-          // subscribe to space updates
-          space.subscribe('update', listener)
         })
     }
     return () => {
@@ -48,7 +40,7 @@ function BoardPage() {
         spaceId &&
         spaces.get(spaceId).then((space) => {
           space.leave()
-          space.unsubscribe('update', listener)
+          space.unsubscribe()
         })
     }
   }, [spaceId, user])

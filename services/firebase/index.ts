@@ -5,12 +5,12 @@ import { initializeApp } from 'firebase/app'
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: 'AIzaSyDoJnx7zWipvD4zdVK3NjxkiA4ob9JyAGk',
-  authDomain: 'ably-logic-flow.firebaseapp.com',
-  projectId: 'ably-logic-flow',
-  storageBucket: 'ably-logic-flow.appspot.com',
-  messagingSenderId: '830017837719',
-  appId: '1:830017837719:web:b44768f91219edb78ba7d2'
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
 }
 
 // Initialize Firebase
