@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useAtom, useAtomValue } from 'jotai'
 import { UserAtom, WorkspaceAtom, shareModalAtom, spaceAtom } from '@/state'
 import { Avatar, Button, Label, Modal, TextInput } from 'flowbite-react'
-import { Share } from 'node_modules/lucide-react'
+import { Share } from 'lucide-react'
 import {
   UserDoc,
   getAllUsers,
