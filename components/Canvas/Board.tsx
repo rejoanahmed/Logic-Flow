@@ -23,6 +23,7 @@ import {
 } from 'lib/constants'
 import { spaces } from '@/services/ably'
 import { useSpace } from '@ably/spaces/dist/mjs/react'
+import { AND, NAND, NOR, NOT, OR, XNOR, XOR } from 'lib/gates'
 
 const LogicBoard = () => {
   const spaceName = useAtomValue(spaceAtom)
@@ -249,39 +250,34 @@ const LogicBoard = () => {
 
         const left = canvasPosition.x
         const top = canvasPosition.y
+        let g
+        switch (gate) {
+          case 'AND':
+            g = AND
+            break
+          case 'OR':
+            g = OR
+            break
+          case 'NOT':
+            g = NOT
+            break
+          case 'NAND':
+            g = NAND
+            break
+          case 'NOR':
+            g = NOR
+            break
+          case 'XOR':
+            g = XOR
+            break
+          case 'XNOR':
+            g = XNOR
+            break
+          default:
+            break
+        }
 
-        console.log('adding component')
-        LogicBoard?.add({
-          x: left,
-          type: BoardElementType.Component,
-          y: top,
-          id: uid.randomUUID(),
-          inputs: [
-            { id: uid.randomUUID(), label: 'A' },
-            { id: uid.randomUUID(), label: 'B' },
-            { id: uid.randomUUID(), label: 'C' },
-            { id: uid.randomUUID(), label: 'D' },
-            { id: uid.randomUUID(), label: 'E' },
-            { id: uid.randomUUID(), label: 'F' },
-            { id: uid.randomUUID(), label: 'G' },
-            { id: uid.randomUUID(), label: 'H' }
-          ],
-          label: '8X1 MUX',
-          outputs: [
-            { id: uid.randomUUID(), label: 'X', booleanFunction: 'A&&B' },
-            { id: uid.randomUUID(), label: 'Y', booleanFunction: 'A&&B' },
-            { id: uid.randomUUID(), label: 'Z', booleanFunction: 'A&&B' }
-          ]
-        })
-
-        // LogicBoard?.add({
-        //   x: left,
-        //   y: top,
-        //   id: uid.randomUUID(),
-        //   label: 'A',
-        //   value: 'X',
-        //   type: BoardElementType.Input
-        // })
+        LogicBoard?.add(g(left, top))
       })
     }
 

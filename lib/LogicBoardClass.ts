@@ -154,6 +154,7 @@ class LogicBoard {
       const master = this.objectsMap.get(id!) as fabric.Group
       if (!master) return
       master.set({ left: x, top: y })
+      master.setCoords()
       const inputIds = master?.data?.inputs.map(
         (input: any) => input.id
       ) as string[]

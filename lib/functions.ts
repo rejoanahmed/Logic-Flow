@@ -246,6 +246,7 @@ export const moveComponent = (
         selectable: false,
         hasControls: false
       })
+      label.setCoords()
     }
   }
 
@@ -263,6 +264,7 @@ export const moveComponent = (
         selectable: false,
         hasControls: false
       })
+      label.setCoords()
     }
   }
 
@@ -275,6 +277,7 @@ export const moveComponent = (
         x2: inputCircle.left!,
         y2: inputCircle.top!
       })
+      wire.setCoords()
     }
   })
 
@@ -294,6 +297,7 @@ export const moveComponent = (
           x1: outputCircle.left!,
           y1: outputCircle.top!
         })
+        wire.setCoords()
       }
     }
   })
