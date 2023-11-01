@@ -275,6 +275,7 @@ const LogicBoard = () => {
             g = XNOR
             break
           default:
+            g = AND
             break
         }
 
