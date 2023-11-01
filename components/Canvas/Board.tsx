@@ -34,13 +34,14 @@ const LogicBoard = () => {
   const setActiveObject = useSetAtom(ActiveObjectAtom)
   const gate = useAtomValue(selectedToolAtom)
   const boardFromDB = useAtomValue(WorkspaceAtom)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const [canvas, setCanvas] = useAtom(CanvasAtom)
   const [LogicBoard, setLogicBoard] = useAtom(LogicBoardAtom)
 
   useEffect(() => {
     if (!space) return
     if (!boardFromDB) return
+    console.log(canvasRef.current)
     if (canvasRef.current) {
       const canvas = new fabric.Canvas(canvasRef.current, {
         backgroundColor: 'rgb(238,231,220)',
@@ -54,11 +55,13 @@ const LogicBoard = () => {
     }
 
     return () => {
-      canvas?.dispose()
+      console.log('cleaning up')
+      canvas && canvas?.dispose()
       setCanvas(null)
       setLogicBoard(null)
+      LogicBoard && updateWorkspace(space.name, LogicBoard?.board)
     }
-  }, [canvasRef, space, boardFromDB])
+  }, [canvasRef.current, space, boardFromDB])
 
   useEffect(() => {
     console.log(canvas, LogicBoard, space)
@@ -341,7 +344,7 @@ const LogicBoard = () => {
         height: size.height - 64
       })
     }
-  }, [canvas?.setDimensions, size, sidebarOpen])
+  }, [canvas, size, sidebarOpen])
 
   // drop event
   useEffect(() => {
