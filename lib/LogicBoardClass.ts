@@ -73,29 +73,29 @@ class LogicBoard {
   constructor(
     canvas: fabric.Canvas,
     space: Space,
-    board?: (ComponentSchema | InputSchema | WireSchema)[]
+    b?: (ComponentSchema | InputSchema | WireSchema)[]
   ) {
     this.canvas = canvas
     this.board = []
     this.objectsMap = new Map()
     this.wiresMap = new Map()
     this.space = space
-    if (board) {
+    if (b) {
       let components: (ComponentSchema | InputSchema)[] = [],
         wires: WireSchema[] = []
-      for (let i = 0; i < this.board.length; i++) {
-        const element = this.board[i]
-        if ('x' in element) {
+      for (let i = 0; i < b.length; i++) {
+        const element = b[i]
+        if (element.type === BoardElementType.Component) {
           components.push(element)
-        } else {
+        } else if (element.type === BoardElementType.Wire) {
           wires.push(element)
         }
       }
       components.forEach((component) => {
-        this.add(component)
+        this.add(component, false)
       })
       wires.forEach((connection) => {
-        this.add(connection)
+        this.add(connection, false)
       })
     }
   }

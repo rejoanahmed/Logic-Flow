@@ -38,6 +38,7 @@ const LogicBoard = () => {
   const [canvas, setCanvas] = useAtom(CanvasAtom)
   const [LogicBoard, setLogicBoard] = useAtom(LogicBoardAtom)
 
+  // initialize the canvas
   useEffect(() => {
     if (!space) return
     if (!boardFromDB) return
@@ -59,10 +60,10 @@ const LogicBoard = () => {
       canvas && canvas?.dispose()
       setCanvas(null)
       setLogicBoard(null)
-      LogicBoard && updateWorkspace(space.name, LogicBoard?.board)
     }
   }, [canvasRef.current, space, boardFromDB])
 
+  // initialize the canvas events and logic
   useEffect(() => {
     console.log(canvas, LogicBoard, space)
     if (!space || !LogicBoard || !canvas) return

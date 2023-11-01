@@ -165,6 +165,7 @@ export const updateWorkspace = async (
   try {
     const docRef = doc(db, workspacePath(id))
     await setDoc(docRef, { elements }, { merge: true })
+    console.log('updated workspace')
   } catch (error) {
     console.log(error)
   }
