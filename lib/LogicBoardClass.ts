@@ -4,6 +4,7 @@ import {
   addComponent,
   addInput,
   addWire,
+  moveComponent,
   removeComponent,
   removeWire
 } from './functions'
@@ -99,12 +100,21 @@ class LogicBoard {
     }
   }
 
-  add = <T extends ComponentSchema | InputSchema | WireSchema>(params: T) => {
-    // this.space.events.update('add', params)
+  add = <T extends ComponentSchema | InputSchema | WireSchema>(
+    params: T,
+    publishEvent = true
+  ) => {
+    publishEvent && this.space.channel.publish('add', params)
     this.board.push(params)
     // components
     if (params.type === BoardElementType.Component) {
-      addComponent(params, this.canvas, this.objectsMap, this.wiresMap)
+      addComponent(
+        params,
+        this.canvas,
+        this.objectsMap,
+        this.space,
+        this.wiresMap
+      )
     } else if (params.type === BoardElementType.Input) {
       // inputs
       addInput(params, this.canvas, this.objectsMap)
@@ -115,7 +125,7 @@ class LogicBoard {
   }
 
   remove = (id: string) => {
-    console.log('remove', id)
+    this.space.channel.publish('remove', id)
     if (this.objectsMap.has(id)) {
       // check if it is wire
       if (this.wiresMap.has(id)) {
@@ -137,6 +147,43 @@ class LogicBoard {
   }
 
   setInputs = (params: { id: string; value: 0 | 1 | 'X' }[]) => {}
+
+  move = (options: { id?: string; x?: number; y?: number }) => {
+    const { id, x, y } = options
+    if (id && x && y) {
+      const master = this.objectsMap.get(id!) as fabric.Group
+      if (!master) return
+      master.set({ left: x, top: y })
+      const inputIds = master?.data?.inputs.map(
+        (input: any) => input.id
+      ) as string[]
+      const outputIds = master?.data?.outputs.map(
+        (output: any) => output.id
+      ) as string[]
+      const inputs = inputIds.map((id) => {
+        return {
+          label: this.objectsMap.get(id + 'label') as fabric.Text | undefined,
+          circle: this.objectsMap.get(id) as fabric.Circle
+        }
+      })
+      const outputs = outputIds.map((id) => {
+        return {
+          label: this.objectsMap.get(id + 'label') as fabric.Text | undefined,
+          circle: this.objectsMap.get(id) as fabric.Circle
+        }
+      })
+
+      moveComponent(
+        x,
+        y,
+        this.objectsMap,
+        this.wiresMap,
+        master,
+        inputs,
+        outputs
+      )
+    }
+  }
 }
 
 export default LogicBoard

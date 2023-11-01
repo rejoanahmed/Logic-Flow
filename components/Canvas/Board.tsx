@@ -9,12 +9,10 @@ import SelectModal from './SelectModal'
 import ActiveObjectInfoModal from './SelectedObjectInfoModal'
 import { ActiveObjectAtom } from 'state/LogicBoard'
 import { BoardElementType, ObjectType, WIRE_WIDTH } from 'lib/LogicBoardClass'
-import { useSpace } from '@ably/spaces/dist/mjs/react'
 import { uid } from 'lib/functions'
 import {
   SelectModalAtom,
   SidebarAtom,
-  UserAtom,
   selectedToolAtom,
   spaceAtom
 } from '@/state'
@@ -24,9 +22,11 @@ import {
   TOGGLE_SIDEBAR_WIDTH
 } from 'lib/constants'
 import { spaces } from '@/services/ably'
+import { useSpace } from '@ably/spaces/dist/mjs/react'
 
 const LogicBoard = () => {
   const spaceName = useAtomValue(spaceAtom)
+  const space = useSpace()
   const size = useWindowSize()
   const sidebarOpen = useAtomValue(SidebarAtom)
   const setSelectModal = useSetAtom(SelectModalAtom)
@@ -250,6 +250,7 @@ const LogicBoard = () => {
         const left = canvasPosition.x
         const top = canvasPosition.y
 
+        console.log('adding component')
         LogicBoard?.add({
           x: left,
           type: BoardElementType.Component,
@@ -288,6 +289,31 @@ const LogicBoard = () => {
       canvas?.off('drop')
     }
   }, [canvas, gate, LogicBoard])
+
+  useEffect(() => {
+    if (!canvas || !LogicBoard || !space.space) return
+    const sp = space.space
+    sp.channel.subscribe('add', async (update) => {
+      const owner = await sp.members.getSelf()
+      if (owner && owner.connectionId === update.connectionId) return
+      const data = update.data
+      console.log('adding from remote')
+      LogicBoard.add(data, false)
+    })
+
+    sp.channel.subscribe('remove', async (update) => {})
+
+    sp.channel.subscribe('move', async (update) => {
+      const owner = await sp.members.getSelf()
+      if (owner && owner.connectionId === update.connectionId) return
+      const data = update.data
+      console.log('moving from remote')
+      LogicBoard.move({ id: data.id, x: data.x, y: data.y })
+    })
+    return () => {
+      sp.channel.unsubscribe()
+    }
+  }, [canvas, LogicBoard, space])
 
   useEffect(() => {
     // listen to keydown events of delete key

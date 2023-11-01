@@ -1,4 +1,5 @@
-import {
+import { Space } from '@ably/spaces'
+import LogicBoard, {
   ComponentSchema,
   InputSchema,
   MINIMUM_GAP,
@@ -41,6 +42,7 @@ export const addComponent = (
   params: ComponentSchema,
   canvas: fabric.Canvas,
   objectsMap: Map<string, fabric.Object>,
+  space: Space,
   wiresMap: Map<string, WireSchema>
 ) => {
   const noInputs = params.inputs.length
@@ -196,72 +198,104 @@ export const addComponent = (
   }
 
   master.on('moving', () => {
-    // inputs and outputs
-    for (let i = 0; i < noInputs; i++) {
-      const input = inputs[i]
-      const circle = input.circle
-      const label = input.label
-      circle.left = master.left!
-      circle.top = master.top! + ((i + 1) * master.height!) / (noInputs + 1)
-      circle.setCoords()
-      if (label) {
-        label.set({
-          left: circle.left! + RADIUS * 2 + MINIMUM_GAP,
-          top: circle.top!,
-          selectable: false,
-          hasControls: false
-        })
-      }
-    }
-
-    for (let i = 0; i < noOutputs; i++) {
-      const output = outputs[i]
-      const circle = output.circle
-      const label = output.label
-      circle.left = master.left! + master.width!
-      circle.top = master.top! + ((i + 1) * master.height!) / (noOutputs + 1)
-      circle.setCoords()
-      if (label) {
-        label.left = circle.left! - (RADIUS * 2 + MINIMUM_GAP)
-        label.top = circle.top!
-        label.set({
-          selectable: false,
-          hasControls: false
-        })
-      }
-    }
-
-    // wires
-    params.inputs.forEach((input) => {
-      const wire = objectsMap.get(input.id + 'wire') as fabric.Line
-      const inputCircle = objectsMap.get(input.id)
-      if (wire && inputCircle) {
-        wire.set({
-          x2: inputCircle.left!,
-          y2: inputCircle.top!
-        })
-      }
+    space.channel.publish('move', {
+      id: params.id,
+      x: master.left,
+      y: master.top
     })
+    moveComponent(
+      master.left!,
+      master.top!,
+      objectsMap,
+      wiresMap,
+      master,
+      inputs,
+      outputs
+    )
+  })
+}
 
-    params.outputs.forEach((output) => {
-      const wires = [] as fabric.Line[]
-      wiresMap.forEach((wire) => {
-        // find wires connected to this output
-        // TODO: handle the wire from wire body
-        if (wire.from === output.id) {
-          wires.push(objectsMap.get(wire.id) as fabric.Line)
-        }
+export const moveComponent = (
+  x: number,
+  y: number,
+  objectsMap: Map<string, fabric.Object>,
+  wiresMap: Map<string, WireSchema>,
+  master: fabric.Group,
+  inputs: {
+    label?: fabric.Text | undefined
+    circle: fabric.Circle
+  }[],
+  outputs: {
+    label?: fabric.Text | undefined
+    circle: fabric.Circle
+  }[]
+) => {
+  const noInputs = inputs.length
+  const noOutputs = outputs.length
+  for (let i = 0; i < noInputs; i++) {
+    const input = inputs[i]
+    const circle = input.circle
+    const label = input.label
+    circle.left = x
+    circle.top = y + ((i + 1) * master.height!) / (noInputs + 1)
+    circle.setCoords()
+    if (label) {
+      label.set({
+        left: circle.left! + RADIUS * 2 + MINIMUM_GAP,
+        top: circle.top!,
+        selectable: false,
+        hasControls: false
       })
-      const outputCircle = objectsMap.get(output.id)
-      if (wires.length > 0 && outputCircle) {
-        for (const wire of wires) {
-          wire.set({
-            x1: outputCircle.left!,
-            y1: outputCircle.top!
-          })
-        }
+    }
+  }
+
+  for (let i = 0; i < noOutputs; i++) {
+    const output = outputs[i]
+    const circle = output.circle
+    const label = output.label
+    circle.left = x + master.width!
+    circle.top = y + ((i + 1) * master.height!) / (noOutputs + 1)
+    circle.setCoords()
+    if (label) {
+      label.left = circle.left! - (RADIUS * 2 + MINIMUM_GAP)
+      label.top = circle.top!
+      label.set({
+        selectable: false,
+        hasControls: false
+      })
+    }
+  }
+
+  // wires
+  inputs.forEach((input) => {
+    const wire = objectsMap.get(input.circle.data.id + 'wire') as fabric.Line
+    const inputCircle = objectsMap.get(input.circle.data.id)
+    if (wire && inputCircle) {
+      wire.set({
+        x2: inputCircle.left!,
+        y2: inputCircle.top!
+      })
+    }
+  })
+
+  outputs.forEach((output) => {
+    const wires = [] as fabric.Line[]
+    wiresMap.forEach((wire) => {
+      // find wires connected to this output
+      // TODO: handle the wire from wire body
+      if (wire.from === output.circle.data.id) {
+        wires.push(objectsMap.get(wire.id) as fabric.Line)
       }
     })
+    const outputCircle = objectsMap.get(output.circle.data.id)
+    if (wires.length > 0 && outputCircle) {
+      for (const wire of wires) {
+        wire.set({
+          x1: outputCircle.left!,
+          y1: outputCircle.top!
+        })
+      }
+    }
   })
 }
 
