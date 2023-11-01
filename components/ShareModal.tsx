@@ -13,7 +13,6 @@ import {
 function ShareModal() {
   const [openModal, setOpenModal] = useAtom(shareModalAtom)
   const space = useAtomValue(spaceAtom)
-  console.log(space)
   const user = useAtomValue(UserAtom)
   const [users, setUsers] = useState<UserDoc[]>([])
   const [email, setEmail] = useState('')

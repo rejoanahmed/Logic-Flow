@@ -14,10 +14,6 @@ function BoardLayout({ children }: { children: React.ReactNode }) {
   const canvas = useAtomValue(CanvasAtom)
   const setSelectedTool = useSetAtom(selectedToolAtom)
 
-  useEffect(() => {
-    console.log(canvas)
-  }, [canvas])
-
   return (
     <div className='flex'>
       <aside

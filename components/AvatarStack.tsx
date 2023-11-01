@@ -20,7 +20,6 @@ function AvatarStack() {
       const othersMemberInfo = await space.members.getOthers()
       setOthers(othersMemberInfo.filter((m) => m.isConnected))
       space.members.subscribe(async (member) => {
-        console.log('subscribed to member')
         const otherMembers = await space.members.getOthers()
         setOthers(otherMembers.filter((m) => m.isConnected))
       })
@@ -28,7 +27,7 @@ function AvatarStack() {
     f()
     return () => {}
   }, [spaceId])
-  console.log(others)
+
   return (
     <div className='flex flex-wrap'>
       <Avatar.Group className='mr-2'>
