@@ -35,6 +35,15 @@ function BoardPage() {
           })
         })
     }
+    if (!spaceId) {
+      if (router.query.spaceId) {
+        const queriedSpaceId = router.query.spaceId as string
+        setSpaceId(queriedSpaceId)
+      }
+      if (!user) {
+        router.replace('/', undefined, { shallow: true })
+      }
+    }
     return () => {
       user &&
         spaceId &&
@@ -46,18 +55,6 @@ function BoardPage() {
   }, [spaceId, user])
 
   if (user === 'loading') return <p>loading</p>
-
-  if (!spaceId) {
-    if (router.query.spaceId) {
-      const queriedSpaceId = router.query.spaceId as string
-      setSpaceId(queriedSpaceId)
-      return null
-    }
-    if (!user) {
-      router.replace('/', undefined, { shallow: true })
-      return null
-    }
-  }
 
   return (
     <AblyProvider client={ablyClient}>

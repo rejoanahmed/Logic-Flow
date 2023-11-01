@@ -1,33 +1,33 @@
 'use client'
 
 import { spaces } from '@/services/ably'
-import { spaceAtom } from '@/state'
-import { Space, SpaceMember } from '@ably/spaces'
+import { WorkspaceAtom, spaceAtom } from '@/state'
+import { SpaceMember } from '@ably/spaces'
+import { useSpace } from '@ably/spaces/dist/mjs/react'
 import { Avatar } from 'flowbite-react'
 import { useAtomValue } from 'jotai'
 import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 
 function AvatarStack() {
-  // const { self, others, members } = useMembers() ?buggy
-  const spaceId = useAtomValue(spaceAtom)
   const [others, setOthers] = useState<SpaceMember[]>([])
+  const spaceId = useAtomValue(spaceAtom)
   useEffect(() => {
     const f = async () => {
       if (!spaceId) return
       const space = await spaces.get(spaceId)
+      if (!space) return
 
       const othersMemberInfo = await space.members.getOthers()
       setOthers(othersMemberInfo.filter((m) => m.isConnected))
       space.members.subscribe(async (member) => {
+        console.log('subscribed to member')
         const otherMembers = await space.members.getOthers()
         setOthers(otherMembers.filter((m) => m.isConnected))
       })
     }
     f()
-    return () => {
-      // unsubscribing to all events occur when board page is left
-    }
+    return () => {}
   }, [spaceId])
   console.log(others)
   return (
