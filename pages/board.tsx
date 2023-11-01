@@ -55,6 +55,7 @@ function BoardPage() {
   }, [spaceId, user])
 
   if (user === 'loading') return <p>loading</p>
+  if (!spaceId) return <p>no space id</p>
 
   return (
     <AblyProvider client={ablyClient}>

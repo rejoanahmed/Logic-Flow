@@ -1,9 +1,8 @@
 'use client'
 
 import { spaces } from '@/services/ably'
-import { WorkspaceAtom, spaceAtom } from '@/state'
+import { spaceAtom } from '@/state'
 import { SpaceMember } from '@ably/spaces'
-import { useSpace } from '@ably/spaces/dist/mjs/react'
 import { Avatar } from 'flowbite-react'
 import { useAtomValue } from 'jotai'
 import dynamic from 'next/dynamic'
