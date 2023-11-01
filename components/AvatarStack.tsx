@@ -19,9 +19,8 @@ function AvatarStack() {
 
       const othersMemberInfo = await space.members.getOthers()
       setOthers(othersMemberInfo.filter((m) => m.isConnected))
-      space.members.subscribe(async (members) => {
+      space.members.subscribe(async (member) => {
         const otherMembers = await space.members.getOthers()
-        console.log(otherMembers)
         setOthers(otherMembers.filter((m) => m.isConnected))
       })
     }

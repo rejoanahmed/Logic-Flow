@@ -100,7 +100,7 @@ class LogicBoard {
   }
 
   add = <T extends ComponentSchema | InputSchema | WireSchema>(params: T) => {
-    console.log('add', params)
+    // this.space.events.update('add', params)
     this.board.push(params)
     // components
     if (params.type === BoardElementType.Component) {

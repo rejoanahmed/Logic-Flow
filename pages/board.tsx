@@ -12,7 +12,7 @@ import { useEffect } from 'react'
 import { SpaceEvents } from '@ably/spaces'
 
 const listener = (stateChange: SpaceEvents.UpdateEvent) => {
-  console.log(stateChange.members)
+  // console.log(stateChange.members)
 }
 
 function BoardPage() {

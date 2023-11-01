@@ -37,13 +37,10 @@ const LogicBoard = () => {
       const space = await spaces.get(spaceName)
       // Panning
       space.cursors.subscribe('update', async (cursorUpdate) => {
-        console.log(cursorUpdate)
         const members = await space.members.getOthers()
-        console.log(members)
         const member = members.find(
           (member) => member.connectionId === cursorUpdate.data!.connectionId
         )
-        console.log(member)
         if (!member) return
         if (LogicBoard.objectsMap.get(member.connectionId + 'cursor')) {
           const cursor = LogicBoard.objectsMap.get(
@@ -151,9 +148,7 @@ const LogicBoard = () => {
         const y = pointer.y
 
         // update cursor position
-        console.log('update cursor position')
         const userConnectionId = await space.members.getSelf()
-        console.log(userConnectionId)
         userConnectionId &&
           space.cursors.set({
             position: { x, y },
