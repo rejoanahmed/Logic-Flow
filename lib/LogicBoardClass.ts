@@ -104,7 +104,10 @@ class LogicBoard {
     params: T,
     publishEvent = true
   ) => {
-    publishEvent && this.space.channel.publish('add', params)
+    if (publishEvent) {
+      this.space.channel.publish('add', params)
+      console.log('fire add event')
+    }
     this.board.push(params)
     // components
     if (params.type === BoardElementType.Component) {
@@ -124,8 +127,8 @@ class LogicBoard {
     }
   }
 
-  remove = (id: string) => {
-    this.space.channel.publish('remove', id)
+  remove = (id: string, fireEvent = true) => {
+    fireEvent && this.space.channel.publish('remove', id)
     if (this.objectsMap.has(id)) {
       // check if it is wire
       if (this.wiresMap.has(id)) {
@@ -174,6 +177,7 @@ class LogicBoard {
         }
       })
 
+      console.log('move called')
       moveComponent(
         x,
         y,

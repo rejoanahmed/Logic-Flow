@@ -26,7 +26,7 @@ import { AND, NAND, NOR, NOT, OR, XNOR, XOR } from 'lib/gates'
 
 const LogicBoard = () => {
   const spaceName = useAtomValue(spaceAtom)
-  const space = useSpace()
+  const { space } = useSpace()
   const size = useWindowSize()
   const sidebarOpen = useAtomValue(SidebarAtom)
   const setSelectModal = useSetAtom(SelectModalAtom)
@@ -141,17 +141,16 @@ const LogicBoard = () => {
           setActiveObject(event.target)
         }
       })
-      let timeoutId: NodeJS.Timeout
       canvas?.on('mouse:move', async (event) => {
         const pointer = canvas?.getPointer(event.e)
         const x = pointer.x
         const y = pointer.y
 
         // update cursor position
-        const userConnectionId = await space.members.getSelf()
+        const userConnectionId = await space?.members.getSelf()
         if (userConnectionId) {
           console.log('updating cursor position')
-          space.cursors.set({
+          space?.cursors.set({
             position: { x, y },
             data: {
               color: RANDOM_MOUSE_COLOR,
@@ -289,10 +288,11 @@ const LogicBoard = () => {
   }, [canvas, gate, LogicBoard])
 
   useEffect(() => {
-    if (!canvas || !LogicBoard || !space.space) return
-    const sp = space.space
-    sp.channel.subscribe('add', async (update) => {
-      const owner = await sp.members.getSelf()
+    console.log(canvas, LogicBoard, space)
+    if (!canvas || !LogicBoard || !space) return
+    space.channel.subscribe('add', async (update) => {
+      console.log('add event')
+      const owner = await space.members.getSelf()
       console.log(update, owner)
       if (owner && owner.connectionId === update.connectionId) return
       const data = update.data
@@ -300,17 +300,25 @@ const LogicBoard = () => {
       LogicBoard.add(data, false)
     })
 
-    sp.channel.subscribe('remove', async (update) => {})
+    space.channel.subscribe('remove', async (update) => {
+      console.log('remove event')
+      const owner = await space.members.getSelf()
+      if (owner && owner.connectionId === update.connectionId) return
+      const data = update.data
+      console.log('removing from remote')
+      LogicBoard.remove(data, false)
+    })
 
-    sp.channel.subscribe('move', async (update) => {
-      const owner = await sp.members.getSelf()
+    space.channel.subscribe('move', async (update) => {
+      console.log('move event')
+      const owner = await space.members.getSelf()
       if (owner && owner.connectionId === update.connectionId) return
       const data = update.data
       console.log('moving from remote')
       LogicBoard.move({ id: data.id, x: data.x, y: data.y })
     })
     return () => {
-      sp.channel.unsubscribe()
+      space.channel.unsubscribe()
     }
   }, [canvas, LogicBoard, space])
 
